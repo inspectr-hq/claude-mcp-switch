@@ -1,0 +1,50 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+
+# Build output
+build/
+DerivedData/
+
+# Swift Package Manager local/build state
+.build/
+.swiftpm/
+
+# Keep SwiftPM lock files tracked
+!Package.resolved
+!**/Package.resolved
+!*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+!*.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+# SwiftPM generated dependency checkouts, if present
+Packages/
+Package.pins
+
+# CocoaPods, if used
+Pods/
+# For app projects, usually commit Podfile.lock if you use CocoaPods:
+# !Podfile.lock
+
+# Carthage, if used
+Carthage/Build/
+
+# Fastlane generated output
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# Secrets / local config
+*.env
+.env
+.env.*
+*.xcconfig.local
+.inspectr
+.agents
+skills-lock.json
+.DerivedData
+app/.cache
