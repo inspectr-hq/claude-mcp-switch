@@ -29,23 +29,44 @@ It gives you a fast desktop UI for quickly enabling or disabling the MCP server 
 
 | Menu Bar | MCP Servers | Edit Server | 
 | -------- | ----------- | ----------- | 
-| ![Menu Bar](./content/claude-mcp-switch-menu-bar.png) | ![MCP Server](./content/claude-mcp-switch-manager.png) | ![Edit form](./content/claude-mcp-switch-form.png)` | 
+| ![Menu Bar](./content/claude-mcp-switch-menu-bar.png) | ![MCP Server](./content/claude-mcp-switch-manager.png) | ![Edit form](./content/claude-mcp-switch-form.png) | 
 
 ## Get Started
 
 ### 1. Install Claude MCP Switch
 
-Release automation is not active yet, so installation is currently source-based.
+Choose one of these installation paths:
 
-#### Option A: Open in Xcode
+#### Option A: Homebrew
+
+When release distribution is active, install with:
+
+```bash
+brew tap timha/claude-mcp-switch-app
+brew install --cask claude-mcp-switch
+```
+
+#### Option B: DMG
+
+1. Open the GitHub Releases page for Claude MCP Switch.
+2. Download the latest `Claude-MCP-Switch-<version>.dmg`.
+3. Open the DMG and drag `Claude MCP Switch.app` into your `Applications` folder.
+
+#### Option C: ZIP
+
+1. Open the GitHub Releases page for Claude MCP Switch.
+2. Download the latest `Claude-MCP-Switch-<version>.zip`.
+3. Extract it and move `Claude MCP Switch.app` to your `Applications` folder.
+
+#### Option D: Build from Source
+
+Open in Xcode:
 
 ```bash
 open app/ClaudeMcpSwitch.xcodeproj
 ```
 
-Then build and run the `ClaudeMcpSwitch` scheme from Xcode.
-
-#### Option B: SwiftPM Development Build
+Or use SwiftPM:
 
 ```bash
 cd app
@@ -55,9 +76,9 @@ swift run ClaudeMcpSwitch
 
 ### 2. First Launch on macOS
 
-If you run a local debug build from Xcode, macOS should launch it normally.
+If you run a local debug build from Xcode, macOS should usually launch it normally.
 
-If you distribute an ad hoc build manually, macOS may warn because the app is not yet packaged through a signed and notarized release flow.
+If you open an unsigned or ad hoc distributed build, macOS may warn because the app is not yet packaged through a signed and notarized release flow.
 
 If macOS blocks launch:
 
