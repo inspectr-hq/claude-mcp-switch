@@ -581,8 +581,8 @@ struct SyncConfirmationSheet: View {
 
                     if !preview.removals.isEmpty {
                         syncChangeSection(
-                            title: "Removals",
-                            subtitle: "These MCP Servers exist in Claude Desktop now but are not enabled in Claude MCP Switch.",
+                            title: "Only in Claude Desktop",
+                            subtitle: "These MCP Servers exist in Claude Desktop but not in the enabled Claude MCP Switch list. They will be removed on sync.",
                             changes: preview.removals,
                             style: .removal
                         )
@@ -733,15 +733,20 @@ struct SyncRemovalWarningSheet: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Servers to remove")
+                    Text("Only in Claude Desktop")
                         .font(.headline)
 
                     ForEach(warning.removals, id: \.self) { serverName in
                         HStack(alignment: .top, spacing: 8) {
                             Image(systemName: "checkmark.square")
                                 .foregroundStyle(.secondary)
-                            Text(serverName)
-                                .textSelection(.enabled)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(serverName)
+                                    .textSelection(.enabled)
+                                Text("Will be removed from Claude Desktop on sync")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                 }
