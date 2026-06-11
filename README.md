@@ -11,7 +11,7 @@ It gives you a fast desktop UI for quickly enabling or disabling the MCP server 
 ![macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
 ![Swift](https://img.shields.io/badge/language-Swift-orange)
 ![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue)
-![Tests](https://img.shields.io/github/actions/workflow/status/timha/claude-mcp-switch-app/tests.yaml?label=tests)
+![Tests](https://img.shields.io/github/actions/workflow/status/inspectr-hq/claude-mcp-switch/tests.yaml?label=tests)
 
 ## Features
 
@@ -42,21 +42,21 @@ Choose one of these installation paths:
 When release distribution is active, install with:
 
 ```bash
-brew tap timha/claude-mcp-switch-app
+brew tap inspectr-hq/homebrew-inspectr
 brew install --cask claude-mcp-switch
 ```
 
 #### Option B: DMG
 
 1. Open the GitHub Releases page for Claude MCP Switch.
-2. Download the latest `Claude-MCP-Switch-<version>.dmg`.
+2. Download the latest `ClaudeMcpSwitch-<version>.dmg`.
 3. Open the DMG and drag `Claude MCP Switch.app` into your `Applications` folder.
 
 #### Option C: ZIP
 
 1. Open the GitHub Releases page for Claude MCP Switch.
-2. Download the latest `Claude-MCP-Switch-<version>.zip`.
-3. Extract it and move `Claude MCP Switch.app` to your `Applications` folder.
+2. Download the latest `ClaudeMcpSwitch-<version>.zip`.
+3. Extract it and move `ClaudeMcpSwitch.app` to your `Applications` folder.
 
 #### Option D: Build from Source
 
