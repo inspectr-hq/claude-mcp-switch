@@ -10,7 +10,7 @@ struct ServerListView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("MCP Servers")
                         .font(.title2)
-                    Text("Current registry stored locally and synced into Claude Desktop on demand.")
+                    Text("Your MCP Servers are stored locally and synced into Claude Desktop on demand.")
                         .foregroundStyle(.secondary)
                 }
 
@@ -64,13 +64,13 @@ struct ServerListView: View {
                 if coordinator.registry.servers.isEmpty {
                     ContentUnavailableView {
                         Label {
-                            Text("No Managed Servers")
+                            Text("No MCP Servers")
                         } icon: {
                             Image(systemName: "server.rack")
                                 .rotationEffect(.degrees(180))
                         }
                     } description: {
-                        Text("Import from Claude Desktop or add registry data in a later implementation pass.")
+                        Text("Import from Claude Desktop or add MCP Servers in a later implementation pass.")
                     }
                 }
             }
@@ -156,7 +156,7 @@ private struct ServerEditorSheet: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Edit MCP Server")
                             .font(.title2)
-                        Text("Update one server definition in the local Claude MCP Switch registry.")
+                        Text("Update one saved MCP Server in Claude MCP Switch.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -461,7 +461,7 @@ struct SyncConfirmationSheet: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Review Claude Desktop Changes")
                             .font(.title2)
-                        Text("Claude MCP Switch is about to update the `mcpServers` block in Claude Desktop.")
+                        Text("Claude MCP Switch is about to update the MCP Servers in Claude Desktop.")
                             .foregroundStyle(.secondary)
                         Text(preview.configPath)
                             .font(.caption.monospaced())
@@ -496,7 +496,7 @@ struct SyncConfirmationSheet: View {
                     if !preview.additions.isEmpty {
                         syncChangeSection(
                             title: "Additions",
-                            subtitle: "These servers exist in the registry and will be written into Claude Desktop.",
+                            subtitle: "These MCP Servers are enabled in Claude MCP Switch and will be written into Claude Desktop.",
                             changes: preview.additions,
                             style: .addition
                         )
@@ -505,7 +505,7 @@ struct SyncConfirmationSheet: View {
                     if !preview.updates.isEmpty {
                         syncChangeSection(
                             title: "Updates",
-                            subtitle: "These existing Claude Desktop entries will be replaced with the registry version.",
+                            subtitle: "These existing Claude Desktop entries will be replaced with the Claude MCP Switch version.",
                             changes: preview.updates,
                             style: .update
                         )
@@ -514,7 +514,7 @@ struct SyncConfirmationSheet: View {
                     if !preview.removals.isEmpty {
                         syncChangeSection(
                             title: "Removals",
-                            subtitle: "These servers exist in Claude Desktop now but are not enabled in the registry.",
+                            subtitle: "These MCP Servers exist in Claude Desktop now but are not enabled in Claude MCP Switch.",
                             changes: preview.removals,
                             style: .removal
                         )
@@ -526,7 +526,7 @@ struct SyncConfirmationSheet: View {
             Divider()
 
             HStack {
-                Text("This only updates `mcpServers`. Other Claude Desktop keys stay intact.")
+                Text("This only updates MCP Servers. Other Claude Desktop keys stay intact.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 

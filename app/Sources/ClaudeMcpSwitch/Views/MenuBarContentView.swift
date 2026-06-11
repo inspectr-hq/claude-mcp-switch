@@ -17,22 +17,17 @@ struct MenuBarContentView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Claude MCP Switch")
                         .font(.headline)
-                    Text("\(coordinator.registry.servers.count) servers in registry")
+                    Text(headerStatusText)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    if let statusMessage = coordinator.statusMessage {
-                        Text(statusMessage)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
             Divider()
             if coordinator.registry.servers.isEmpty {
-                Text("No servers in registry")
+                Text("No MCP Servers")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -168,5 +163,12 @@ struct MenuBarContentView: View {
                 }
             }
         )
+    }
+
+    private var headerStatusText: String {
+        if let statusMessage = coordinator.statusMessage, !statusMessage.isEmpty {
+            return statusMessage
+        }
+        return "\(coordinator.registry.servers.count) MCP Servers"
     }
 }

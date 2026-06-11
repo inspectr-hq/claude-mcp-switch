@@ -57,9 +57,9 @@ final class AppCoordinator: ObservableObject {
     func saveRegistry() {
         do {
             try registryStore.saveRegistry(registry)
-            statusMessage = "Saved registry"
+            statusMessage = "Saved MCP Servers"
         } catch {
-            statusMessage = "Failed to save registry: \(error.localizedDescription)"
+            statusMessage = "Failed to save MCP Servers: \(error.localizedDescription)"
         }
     }
 
@@ -79,7 +79,7 @@ final class AppCoordinator: ObservableObject {
             )
 
             guard preview.hasChanges else {
-                statusMessage = "Claude Desktop already matches the enabled registry servers"
+                statusMessage = "Claude Desktop already matches the enabled MCP Servers"
                 return
             }
 
@@ -267,6 +267,6 @@ struct SyncRemovalWarning: Identifiable {
 
     var message: String {
         let names = removals.joined(separator: ", ")
-        return "Claude Desktop currently contains these MCP servers: \(names). They are not enabled in Claude MCP Switch, so approving sync will remove them from Claude Desktop's mcpServers list."
+        return "Claude Desktop currently contains these MCP servers: \(names). They are not enabled in Claude MCP Switch, so approving sync will remove them from Claude Desktop's servers list."
     }
 }
