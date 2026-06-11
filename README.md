@@ -1,27 +1,146 @@
 # Claude MCP Switch
 
-Native macOS menu bar app for managing Claude Desktop MCP server entries.
+![Claude MCP Switch Logo](app/Sources/ClaudeMcpSwitch/Resources/Assets.xcassets/AppIcon.appiconset/claude-mcp-switch-256.png)
 
-## Current Stage
+Claude MCP Switch is a native macOS menu bar app for managing Claude Desktop configured MCP Servers.
 
-This repository has been reduced to a thin app skeleton:
+It gives you a fast desktop UI for quickly enabling or disabling the MCP server from Claude Desktop App, instead of having to edit the JSON config file. 
 
-- SwiftPM-backed macOS menu bar app with Xcode project support
-- Minimal server manager window and settings window
-- File-backed registry and Claude Desktop config sync services
-- Small test suite covering settings, registry encoding, config preservation, and window helpers
+![macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
+![Swift](https://img.shields.io/badge/language-Swift-orange)
+![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue)
+![Tests](https://img.shields.io/github/actions/workflow/status/timha/claude-mcp-switch-app/tests.yaml?label=tests)
 
-## Not Included Yet
+## Features
 
-- Full CRUD server editor
-- Advanced import conflict handling
-- Backup browser and recovery UI
-- Release packaging workflow
+- Native macOS menu bar app built with SwiftUI
+- Import `mcpServers` from Claude Desktop config
+- Local file-backed storage for saved MCP Servers
+- Enable or disable servers from the menu bar or manager window
+- Edit server name, command, arguments, environment variables, and notes
+- Sync enabled servers back into Claude Desktop
+- Sync review flow with diff preview for additions and updates
+- Separate removal warning when sync would only remove Claude Desktop entries
+- Atomic writes with backups for both local storage and Claude Desktop config updates
+
+## Screenshots
+
+| Menu Bar | MCP Servers | Edit Server | Settings |
+| -------- | ----------- | ----------- | -------- |
+| `Placeholder` | `Placeholder` | `Placeholder` | `Placeholder` |
+
+## Get Started
+
+### 1. Install Claude MCP Switch
+
+Release automation is not active yet, so installation is currently source-based.
+
+#### Option A: Open in Xcode
+
+```bash
+open app/ClaudeMcpSwitch.xcodeproj
+```
+
+Then build and run the `ClaudeMcpSwitch` scheme from Xcode.
+
+#### Option B: SwiftPM Development Build
+
+```bash
+cd app
+swift build
+swift run ClaudeMcpSwitch
+```
+
+### 2. First Launch on macOS
+
+If you run a local debug build from Xcode, macOS should launch it normally.
+
+If you distribute an ad hoc build manually, macOS may warn because the app is not yet packaged through a signed and notarized release flow.
+
+If macOS blocks launch:
+
+1. Move the app into `Applications` if needed.
+2. Right-click the app and choose `Open`.
+3. Click `Open` again in the macOS warning dialog.
+
+If Finder still blocks the app, use:
+
+- `System Settings -> Privacy & Security` and click `Open Anyway`.
+
+### 3. Import Your MCP Servers
+
+1. Launch Claude MCP Switch.
+2. Open the menu bar dropdown.
+3. Choose `Import from Claude Desktop`.
+4. Review and enable the MCP Servers you want to manage.
+5. Use `Sync to Claude Desktop` when you want Claude Desktop `mcpServers` to match the enabled set.
+
+## Storage
+
+Claude MCP Switch stores its local data in:
+
+```text
+~/Library/Application Support/com.trinix.ClaudeMcpSwitch/
+```
+
+Important files:
+
+- `servers.json`: saved MCP Servers used by the app
+- `backups/`: backups created before overwriting local or Claude config files
+
+By default, Claude Desktop config is read from its standard path unless you override it in app settings.
+
+## Sync Behavior
+
+When you sync to Claude Desktop:
+
+- only the `mcpServers` section is rewritten
+- unrelated Claude Desktop config keys are preserved
+- enabled MCP Servers in Claude MCP Switch are treated as the source of truth
+- additions and updates show a compare-style review sheet
+- pure removals show a simpler warning dialog
+
+Approving sync replaces Claude Desktop `mcpServers` with the enabled set from Claude MCP Switch.
 
 ## Development
 
-Run tests from `app/`:
+### Requirements
+
+- macOS
+- Xcode 16 or newer
+- Swift 5.10+ toolchain
+
+### Run Tests
+
+From the repository root:
 
 ```bash
+cd app
 swift test
 ```
+
+Or:
+
+```bash
+swift test --package-path app
+```
+
+### Open in Xcode
+
+```bash
+open app/ClaudeMcpSwitch.xcodeproj
+```
+
+## CI
+
+GitHub Actions currently runs one workflow:
+
+- `.github/workflows/tests.yaml`
+
+It runs `swift test` for pull requests on `macos-latest`.
+
+## Release Status
+
+Release automation is not active in this phase.
+
+See [RELEASE.md](RELEASE.md) for the current manual release posture and what would need to be added before public distribution.

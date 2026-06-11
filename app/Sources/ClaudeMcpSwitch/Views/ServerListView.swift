@@ -3,6 +3,7 @@ import SwiftUI
 struct ServerListView: View {
     @EnvironmentObject var coordinator: AppCoordinator
     @State private var editingServer: ManagedServer?
+    @State private var deletingServer: ManagedServer?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -49,13 +50,20 @@ struct ServerListView: View {
 
                         Spacer()
 
-                        Button("Edit") {
-                            editingServer = server
-                        }
-
                         Text(server.updatedAt, style: .date)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+
+                        HStack(spacing: 8) {
+                            Button("Edit") {
+                                editingServer = server
+                            }
+
+                            Button("Delete") {
+                                deletingServer = server
+                            }
+                            .foregroundStyle(.red)
+                        }
                     }
                     .padding(.vertical, 4)
                 }
@@ -87,6 +95,21 @@ struct ServerListView: View {
                 coordinator.updateServer(updatedServer)
             }
         }
+        .alert(
+            deletingServer?.name.map { "Delete \($0)?" } ?? "",
+            isPresented: deleteAlertIsPresented,
+            presenting: deletingServer
+        ) { server in
+            Button("Cancel", role: .cancel) {
+                deletingServer = nil
+            }
+            Button("Delete", role: .destructive) {
+                coordinator.deleteServer(server.id)
+                deletingServer = nil
+            }
+        } message: { server in
+            Text("This removes the MCP Server from Claude MCP Switch. It will no longer be available for sync unless you import or add it again.")
+        }
         .sheet(item: syncPreviewBinding) { preview in
             SyncConfirmationSheet(preview: preview)
                 .environmentObject(coordinator)
@@ -111,6 +134,17 @@ struct ServerListView: View {
         Binding(
             get: { coordinator.syncPreview },
             set: { coordinator.syncPreview = $0 }
+        )
+    }
+
+    private var deleteAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { deletingServer != nil },
+            set: { isPresented in
+                if !isPresented {
+                    deletingServer = nil
+                }
+            }
         )
     }
 

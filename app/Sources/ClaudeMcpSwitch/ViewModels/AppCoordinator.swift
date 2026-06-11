@@ -163,6 +163,18 @@ final class AppCoordinator: ObservableObject {
         saveRegistry()
     }
 
+    func deleteServer(_ serverID: UUID) {
+        let originalCount = registry.servers.count
+        registry.servers.removeAll { $0.id == serverID }
+
+        guard registry.servers.count != originalCount else {
+            return
+        }
+
+        saveRegistry()
+        statusMessage = "Deleted MCP Server"
+    }
+
     private static func loadSettings(from defaults: UserDefaults) -> AppSettings {
         guard
             let data = defaults.data(forKey: "claude_mcp_switch.settings"),
