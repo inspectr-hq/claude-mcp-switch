@@ -106,6 +106,7 @@ final class WindowManager {
         }
 
         updateActivationPolicy()
+        let targetSize = syncApprovalWindowSize(for: coordinator)
 
         let view = SyncApprovalWindowView(
             onClose: { [weak self] in
@@ -116,6 +117,9 @@ final class WindowManager {
 
         if let window = syncApprovalWindow {
             window.contentView = NSHostingView(rootView: view)
+            let topEdge = window.frame.maxY
+            window.setContentSize(targetSize)
+            centerHorizontally(window, topEdge: topEdge)
             if window.isMiniaturized {
                 window.deminiaturize(nil)
             }
@@ -127,7 +131,7 @@ final class WindowManager {
         }
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 760, height: 700),
+            contentRect: NSRect(x: 0, y: 0, width: targetSize.width, height: targetSize.height),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered,
             defer: false
@@ -136,12 +140,12 @@ final class WindowManager {
         window.minSize = NSSize(width: 560, height: 280)
         window.contentView = NSHostingView(rootView: view)
         window.isReleasedWhenClosed = false
-        let delegate = WindowStateDelegate { [weak self, weak coordinator] in
+        let delegate = WindowStateDelegate(onClose: { [weak self, weak coordinator] in
             coordinator?.cancelSyncToClaudeConfig()
             self?.syncApprovalWindow = nil
             self?.syncApprovalDelegate = nil
             self?.updateActivationPolicy()
-        }
+        }, preserveTopOnResize: true)
         syncApprovalDelegate = delegate
         window.delegate = delegate
         syncApprovalWindow = window
@@ -157,6 +161,24 @@ final class WindowManager {
         syncApprovalWindow = nil
         syncApprovalDelegate = nil
         updateActivationPolicy()
+    }
+
+    private func syncApprovalWindowSize(for coordinator: AppCoordinator) -> NSSize {
+        if let preview = coordinator.syncPreview {
+            let totalChanges = preview.additions.count + preview.updates.count + preview.removals.count
+            let estimatedHeight = CGFloat(totalChanges) * 110
+            let height = min(max(420, 250 + estimatedHeight), 720)
+            return NSSize(width: 720, height: height)
+        }
+
+        if let warning = coordinator.syncRemovalWarning {
+            let checklistHeight = CGFloat(warning.removals.count) * 42
+            let checklistIdealHeight = max(80, checklistHeight)
+            let height = min(max(280, 170 + checklistIdealHeight), 520)
+            return NSSize(width: 600, height: height)
+        }
+
+        return NSSize(width: 560, height: 280)
     }
 }
 

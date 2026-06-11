@@ -19,14 +19,6 @@ struct ServerListView: View {
                 actions: deleteAlertActions,
                 message: deleteAlertMessage
             )
-            .sheet(item: syncPreviewBinding) { preview in
-                SyncConfirmationSheet(preview: preview)
-                    .environmentObject(coordinator)
-            }
-            .sheet(item: syncRemovalWarningBinding) { warning in
-                SyncRemovalWarningSheet(warning: warning)
-                    .environmentObject(coordinator)
-            }
     }
 
     private var content: some View {
@@ -59,6 +51,7 @@ struct ServerListView: View {
             }
             Button("Sync to Claude Desktop") {
                 coordinator.requestSyncToClaudeConfig()
+                WindowManager.shared.showSyncApproval(coordinator: coordinator)
             }
             .buttonStyle(.borderedProminent)
         }
@@ -100,13 +93,6 @@ struct ServerListView: View {
         }
     }
 
-    private var syncPreviewBinding: Binding<SyncPreview?> {
-        Binding(
-            get: { coordinator.syncPreview },
-            set: { coordinator.syncPreview = $0 }
-        )
-    }
-
     private var deleteAlertIsPresented: Binding<Bool> {
         Binding(
             get: { deletingServer != nil },
@@ -139,13 +125,6 @@ struct ServerListView: View {
     @ViewBuilder
     private func deleteAlertMessage(server: ManagedServer) -> some View {
         Text("This removes the MCP Server from Claude MCP Switch. It will no longer be available for sync unless you import or add it again.")
-    }
-
-    private var syncRemovalWarningBinding: Binding<SyncRemovalWarning?> {
-        Binding(
-            get: { coordinator.syncRemovalWarning },
-            set: { coordinator.syncRemovalWarning = $0 }
-        )
     }
 }
 
@@ -518,8 +497,8 @@ private enum ServerEditorError: LocalizedError {
 }
 
 struct SyncConfirmationSheet: View {
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var coordinator: AppCoordinator
+    let onClose: (() -> Void)?
 
     let preview: SyncPreview
 
@@ -590,7 +569,9 @@ struct SyncConfirmationSheet: View {
                     }
                 }
                 .padding(20)
+                .frame(maxWidth: .infinity, alignment: .topLeading)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
 
             Divider()
 
@@ -603,19 +584,21 @@ struct SyncConfirmationSheet: View {
 
                 Button("Cancel") {
                     coordinator.cancelSyncToClaudeConfig()
-                    dismiss()
+                    onClose?()
                 }
 
                 Button("Approve Sync") {
                     coordinator.confirmSyncToClaudeConfig()
-                    dismiss()
+                    onClose?()
                 }
                 .buttonStyle(.borderedProminent)
             }
             .padding(16)
             .background(.bar)
         }
-        .frame(width: 720, height: 680)
+        .frame(width: 720)
+        .frame(minHeight: 360, idealHeight: preferredHeight, maxHeight: 720, alignment: .top)
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     @ViewBuilder
@@ -718,11 +701,17 @@ struct SyncConfirmationSheet: View {
         .background(Color.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
+
+    private var preferredHeight: CGFloat {
+        let totalChanges = preview.additions.count + preview.updates.count + preview.removals.count
+        let estimatedHeight = CGFloat(totalChanges) * 110
+        return min(max(420, 250 + estimatedHeight), 720)
+    }
 }
 
 struct SyncRemovalWarningSheet: View {
-    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var coordinator: AppCoordinator
+    let onClose: (() -> Void)?
 
     let warning: SyncRemovalWarning
 
@@ -776,12 +765,12 @@ struct SyncRemovalWarningSheet: View {
 
                 Button("Cancel") {
                     coordinator.cancelSyncToClaudeConfig()
-                    dismiss()
+                    onClose?()
                 }
 
                 Button("Approve Sync") {
                     coordinator.confirmSyncToClaudeConfig()
-                    dismiss()
+                    onClose?()
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -790,6 +779,7 @@ struct SyncRemovalWarningSheet: View {
         }
         .frame(width: 600)
         .frame(minHeight: 280, idealHeight: preferredHeight, maxHeight: 520)
+        .frame(maxHeight: .infinity, alignment: .top)
     }
 
     private var checklistHeight: CGFloat {
@@ -806,6 +796,33 @@ struct SyncRemovalWarningSheet: View {
 
     private var preferredHeight: CGFloat {
         min(max(280, 170 + checklistIdealHeight), 520)
+    }
+}
+
+struct SyncApprovalWindowView: View {
+    @EnvironmentObject var coordinator: AppCoordinator
+
+    let onClose: () -> Void
+
+    var body: some View {
+        Group {
+            if let preview = coordinator.syncPreview {
+                SyncConfirmationSheet(onClose: onClose, preview: preview)
+            } else if let warning = coordinator.syncRemovalWarning {
+                SyncRemovalWarningSheet(onClose: onClose, warning: warning)
+            } else {
+                VStack(spacing: 16) {
+                    Text("No sync approval required.")
+                        .foregroundStyle(.secondary)
+
+                    Button("Close") {
+                        onClose()
+                    }
+                }
+                .frame(width: 420, height: 180)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 }
 
