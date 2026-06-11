@@ -518,6 +518,7 @@ private enum ServerEditorError: LocalizedError {
 }
 
 struct SyncConfirmationSheet: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var coordinator: AppCoordinator
 
     let preview: SyncPreview
@@ -602,10 +603,12 @@ struct SyncConfirmationSheet: View {
 
                 Button("Cancel") {
                     coordinator.cancelSyncToClaudeConfig()
+                    dismiss()
                 }
 
                 Button("Approve Sync") {
                     coordinator.confirmSyncToClaudeConfig()
+                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -718,6 +721,7 @@ struct SyncConfirmationSheet: View {
 }
 
 struct SyncRemovalWarningSheet: View {
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var coordinator: AppCoordinator
 
     let warning: SyncRemovalWarning
@@ -736,25 +740,31 @@ struct SyncRemovalWarningSheet: View {
                     Text("Only in Claude Desktop")
                         .font(.headline)
 
-                    ForEach(warning.removals, id: \.self) { serverName in
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "checkmark.square")
-                                .foregroundStyle(.secondary)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(serverName)
-                                    .textSelection(.enabled)
-                                Text("Will be removed from Claude Desktop on sync")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 10) {
+                            ForEach(warning.removals, id: \.self) { serverName in
+                                HStack(alignment: .top, spacing: 8) {
+                                    Image(systemName: "checkmark.square")
+                                        .foregroundStyle(.secondary)
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(serverName)
+                                            .textSelection(.enabled)
+                                        Text("Will be removed from Claude Desktop on sync")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity, alignment: .leading)
                             }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .frame(minHeight: 80, idealHeight: checklistIdealHeight, maxHeight: checklistMaxHeight)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(12)
                 .background(Color.secondary.opacity(0.08))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
-
             }
             .padding(20)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -766,17 +776,36 @@ struct SyncRemovalWarningSheet: View {
 
                 Button("Cancel") {
                     coordinator.cancelSyncToClaudeConfig()
+                    dismiss()
                 }
 
                 Button("Approve Sync") {
                     coordinator.confirmSyncToClaudeConfig()
+                    dismiss()
                 }
                 .buttonStyle(.borderedProminent)
             }
             .padding(16)
             .background(.bar)
         }
-        .frame(width: 580, height: 250)
+        .frame(width: 600)
+        .frame(minHeight: 280, idealHeight: preferredHeight, maxHeight: 520)
+    }
+
+    private var checklistHeight: CGFloat {
+        CGFloat(warning.removals.count) * 42
+    }
+
+    private var checklistIdealHeight: CGFloat {
+        max(80, checklistHeight)
+    }
+
+    private var checklistMaxHeight: CGFloat {
+        min(max(80, checklistHeight), 220)
+    }
+
+    private var preferredHeight: CGFloat {
+        min(max(280, 170 + checklistIdealHeight), 520)
     }
 }
 

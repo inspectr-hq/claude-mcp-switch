@@ -15,7 +15,7 @@ struct FilePaths {
     var appSupportDirectoryURL: URL {
         let base = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? homeDirectoryURL.appendingPathComponent("Library/Application Support", isDirectory: true)
-        return base.appendingPathComponent("com.inspectr.ClaudeMcpSwitch", isDirectory: true)
+        return base.appendingPathComponent("com. .ClaudeMcpSwitch", isDirectory: true)
     }
 
     var registryURL: URL {
