@@ -178,6 +178,25 @@ final class AppCoordinator: ObservableObject {
         saveRegistry()
     }
 
+    func duplicateServer(_ serverID: UUID) -> ManagedServer? {
+        guard let sourceServer = registry.servers.first(where: { $0.id == serverID }) else {
+            return nil
+        }
+
+        let duplicate = ManagedServer(
+            name: uniqueDuplicateName(for: sourceServer.name),
+            enabled: sourceServer.enabled,
+            config: sourceServer.config,
+            notes: sourceServer.notes
+        )
+
+        registry.servers.append(duplicate)
+        registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        saveRegistry()
+        statusMessage = "Duplicated MCP Server"
+        return duplicate
+    }
+
     func deleteServer(_ serverID: UUID) {
         let originalCount = registry.servers.count
         registry.servers.removeAll { $0.id == serverID }
@@ -199,6 +218,22 @@ final class AppCoordinator: ObservableObject {
         }
 
         return settings
+    }
+
+    private func uniqueDuplicateName(for sourceName: String) -> String {
+        let existingNames = Set(registry.servers.map(\.name))
+        let baseName = "\(sourceName) Copy"
+
+        guard existingNames.contains(baseName) else {
+            return baseName
+        }
+
+        var index = 2
+        while existingNames.contains("\(baseName) \(index)") {
+            index += 1
+        }
+
+        return "\(baseName) \(index)"
     }
 }
 
@@ -293,7 +328,6 @@ struct SyncRemovalWarning: Identifiable {
     }
 
     var message: String {
-        let names = removals.joined(separator: ", ")
-        return "Claude Desktop currently contains these MCP servers: \(names). They are not enabled in Claude MCP Switch, so approving sync will remove them from Claude Desktop's servers list."
+        "These MCP Servers exist in Claude Desktop, but are not enabled in Claude MCP Switch. Approving sync will remove them from Claude Desktop."
     }
 }

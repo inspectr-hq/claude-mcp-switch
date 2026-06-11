@@ -65,19 +65,9 @@ struct MenuBarContentView: View {
             SyncConfirmationSheet(preview: preview)
                 .environmentObject(coordinator)
         }
-        .alert(
-            coordinator.syncRemovalWarning?.title ?? "",
-            isPresented: syncRemovalAlertIsPresented,
-            presenting: coordinator.syncRemovalWarning
-        ) { _ in
-            Button("Cancel", role: .cancel) {
-                coordinator.cancelSyncToClaudeConfig()
-            }
-            Button("Approve Sync", role: .destructive) {
-                coordinator.confirmSyncToClaudeConfig()
-            }
-        } message: { warning in
-            Text(warning.message)
+        .sheet(item: syncRemovalWarningBinding) { warning in
+            SyncRemovalWarningSheet(warning: warning)
+                .environmentObject(coordinator)
         }
     }
 
@@ -154,21 +144,17 @@ struct MenuBarContentView: View {
         )
     }
 
-    private var syncRemovalAlertIsPresented: Binding<Bool> {
-        Binding(
-            get: { coordinator.syncRemovalWarning != nil },
-            set: { isPresented in
-                if !isPresented {
-                    coordinator.syncRemovalWarning = nil
-                }
-            }
-        )
-    }
-
     private var headerStatusText: String {
         if let statusMessage = coordinator.statusMessage, !statusMessage.isEmpty {
             return statusMessage
         }
         return "\(coordinator.registry.servers.count) MCP Servers"
+    }
+
+    private var syncRemovalWarningBinding: Binding<SyncRemovalWarning?> {
+        Binding(
+            get: { coordinator.syncRemovalWarning },
+            set: { coordinator.syncRemovalWarning = $0 }
+        )
     }
 }

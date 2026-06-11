@@ -23,13 +23,10 @@ struct ServerListView: View {
                 SyncConfirmationSheet(preview: preview)
                     .environmentObject(coordinator)
             }
-            .alert(
-                syncRemovalAlertTitle,
-                isPresented: syncRemovalAlertIsPresented,
-                presenting: coordinator.syncRemovalWarning,
-                actions: syncRemovalAlertActions,
-                message: syncRemovalAlertMessage
-            )
+            .sheet(item: syncRemovalWarningBinding) { warning in
+                SyncRemovalWarningSheet(warning: warning)
+                    .environmentObject(coordinator)
+            }
     }
 
     private var content: some View {
@@ -74,6 +71,11 @@ struct ServerListView: View {
                     server: server,
                     onToggle: { coordinator.setEnabled($0, for: server.id) },
                     onEdit: { editingServer = server },
+                    onDuplicate: {
+                        if let duplicate = coordinator.duplicateServer(server.id) {
+                            editingServer = duplicate
+                        }
+                    },
                     onDelete: { deletingServer = server }
                 )
             }
@@ -139,37 +141,11 @@ struct ServerListView: View {
         Text("This removes the MCP Server from Claude MCP Switch. It will no longer be available for sync unless you import or add it again.")
     }
 
-    private var syncRemovalAlertIsPresented: Binding<Bool> {
+    private var syncRemovalWarningBinding: Binding<SyncRemovalWarning?> {
         Binding(
-            get: { coordinator.syncRemovalWarning != nil },
-            set: { isPresented in
-                if !isPresented {
-                    coordinator.syncRemovalWarning = nil
-                }
-            }
+            get: { coordinator.syncRemovalWarning },
+            set: { coordinator.syncRemovalWarning = $0 }
         )
-    }
-
-    private var syncRemovalAlertTitle: String {
-        if let warning = coordinator.syncRemovalWarning {
-            return warning.title
-        }
-        return ""
-    }
-
-    @ViewBuilder
-    private func syncRemovalAlertActions(warning: SyncRemovalWarning) -> some View {
-        Button("Cancel", role: .cancel) {
-            coordinator.cancelSyncToClaudeConfig()
-        }
-        Button("Approve Sync", role: .destructive) {
-            coordinator.confirmSyncToClaudeConfig()
-        }
-    }
-
-    @ViewBuilder
-    private func syncRemovalAlertMessage(warning: SyncRemovalWarning) -> some View {
-        Text(warning.message)
     }
 }
 
@@ -177,6 +153,7 @@ private struct ServerManagerRow: View {
     let server: ManagedServer
     let onToggle: (Bool) -> Void
     let onEdit: () -> Void
+    let onDuplicate: () -> Void
     let onDelete: () -> Void
 
     var body: some View {
@@ -208,6 +185,7 @@ private struct ServerManagerRow: View {
 
             HStack(spacing: 8) {
                 Button("Edit", action: onEdit)
+                Button("Duplicate", action: onDuplicate)
                 Button("Delete", action: onDelete)
                     .foregroundStyle(.red)
             }
@@ -736,6 +714,64 @@ struct SyncConfirmationSheet: View {
         .padding(.vertical, 8)
         .background(Color.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+struct SyncRemovalWarningSheet: View {
+    @EnvironmentObject var coordinator: AppCoordinator
+
+    let warning: SyncRemovalWarning
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 16) {
+                Text(warning.title)
+                    .font(.title2)
+
+                Text(warning.message)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Servers to remove")
+                        .font(.headline)
+
+                    ForEach(warning.removals, id: \.self) { serverName in
+                        HStack(alignment: .top, spacing: 8) {
+                            Image(systemName: "checkmark.square")
+                                .foregroundStyle(.secondary)
+                            Text(serverName)
+                                .textSelection(.enabled)
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(Color.secondary.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Divider()
+
+            HStack {
+                Spacer()
+
+                Button("Cancel") {
+                    coordinator.cancelSyncToClaudeConfig()
+                }
+
+                Button("Approve Sync") {
+                    coordinator.confirmSyncToClaudeConfig()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding(16)
+            .background(.bar)
+        }
+        .frame(width: 580, height: 250)
     }
 }
 
