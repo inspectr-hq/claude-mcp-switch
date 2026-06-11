@@ -1,61 +1,61 @@
 {
   "images" : [
     {
-      "filename" : "pulse-16.png",
+      "filename" : "claude-mcp-switch-16.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "pulse-32.png",
+      "filename" : "claude-mcp-switch-32.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"
     },
     {
-      "filename" : "pulse-32.png",
+      "filename" : "claude-mcp-switch-32.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "32x32"
     },
     {
-      "filename" : "pulse-64.png",
+      "filename" : "claude-mcp-switch-64.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "32x32"
     },
     {
-      "filename" : "pulse-128.png",
+      "filename" : "claude-mcp-switch-128.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "128x128"
     },
     {
-      "filename" : "pulse-256.png",
+      "filename" : "claude-mcp-switch-256.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "128x128"
     },
     {
-      "filename" : "pulse-256.png",
+      "filename" : "claude-mcp-switch-256.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
     },
     {
-      "filename" : "pulse-512.png",
+      "filename" : "claude-mcp-switch-512.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "256x256"
     },
     {
-      "filename" : "pulse-512.png",
+      "filename" : "claude-mcp-switch-512.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
     },
     {
-      "filename" : "pulse-1024.png",
+      "filename" : "claude-mcp-switch-1024.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "512x512"
