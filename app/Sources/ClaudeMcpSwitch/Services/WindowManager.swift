@@ -7,13 +7,15 @@ final class WindowManager {
 
     private var managerWindow: NSWindow?
     private var settingsWindow: NSWindow?
+    private var syncApprovalWindow: NSWindow?
     private var managerDelegate: NSWindowDelegate?
     private var settingsDelegate: NSWindowDelegate?
+    private var syncApprovalDelegate: NSWindowDelegate?
 
     private init() {}
 
     private var hasOpenWindows: Bool {
-        [managerWindow, settingsWindow].contains { $0 != nil }
+        [managerWindow, settingsWindow, syncApprovalWindow].contains { $0 != nil }
     }
 
     private func updateActivationPolicy() {
@@ -95,6 +97,66 @@ final class WindowManager {
         window.orderFrontRegardless()
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func showSyncApproval(coordinator: AppCoordinator) {
+        guard coordinator.syncPreview != nil || coordinator.syncRemovalWarning != nil else {
+            closeSyncApproval()
+            return
+        }
+
+        updateActivationPolicy()
+
+        let view = SyncApprovalWindowView(
+            onClose: { [weak self] in
+                self?.closeSyncApproval()
+            }
+        )
+        .environmentObject(coordinator)
+
+        if let window = syncApprovalWindow {
+            window.contentView = NSHostingView(rootView: view)
+            if window.isMiniaturized {
+                window.deminiaturize(nil)
+            }
+            window.orderFrontRegardless()
+            window.makeKeyAndOrderFront(nil)
+            NSApp.unhide(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return
+        }
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 760, height: 700),
+            styleMask: [.titled, .closable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Approve Sync"
+        window.minSize = NSSize(width: 560, height: 280)
+        window.contentView = NSHostingView(rootView: view)
+        window.isReleasedWhenClosed = false
+        let delegate = WindowStateDelegate { [weak self, weak coordinator] in
+            coordinator?.cancelSyncToClaudeConfig()
+            self?.syncApprovalWindow = nil
+            self?.syncApprovalDelegate = nil
+            self?.updateActivationPolicy()
+        }
+        syncApprovalDelegate = delegate
+        window.delegate = delegate
+        syncApprovalWindow = window
+        updateActivationPolicy()
+        window.center()
+        window.orderFrontRegardless()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    func closeSyncApproval() {
+        syncApprovalWindow?.close()
+        syncApprovalWindow = nil
+        syncApprovalDelegate = nil
+        updateActivationPolicy()
     }
 }
 

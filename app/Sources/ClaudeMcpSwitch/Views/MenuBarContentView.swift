@@ -42,6 +42,7 @@ struct MenuBarContentView: View {
             Divider()
             menuAction("Sync to Claude Desktop") {
                 coordinator.requestSyncToClaudeConfig()
+                WindowManager.shared.showSyncApproval(coordinator: coordinator)
             }
             menuAction("Import from Claude Desktop") {
                 coordinator.importFromClaudeConfig()
@@ -61,14 +62,6 @@ struct MenuBarContentView: View {
         }
         .padding(8)
         .frame(width: 280, alignment: .leading)
-        .sheet(item: syncPreviewBinding) { preview in
-            SyncConfirmationSheet(preview: preview)
-                .environmentObject(coordinator)
-        }
-        .sheet(item: syncRemovalWarningBinding) { warning in
-            SyncRemovalWarningSheet(warning: warning)
-                .environmentObject(coordinator)
-        }
     }
 
     @ViewBuilder
@@ -137,24 +130,10 @@ struct MenuBarContentView: View {
 #endif
     }
 
-    private var syncPreviewBinding: Binding<SyncPreview?> {
-        Binding(
-            get: { coordinator.syncPreview },
-            set: { coordinator.syncPreview = $0 }
-        )
-    }
-
     private var headerStatusText: String {
         if let statusMessage = coordinator.statusMessage, !statusMessage.isEmpty {
             return statusMessage
         }
         return "\(coordinator.registry.servers.count) MCP Servers"
-    }
-
-    private var syncRemovalWarningBinding: Binding<SyncRemovalWarning?> {
-        Binding(
-            get: { coordinator.syncRemovalWarning },
-            set: { coordinator.syncRemovalWarning = $0 }
-        )
     }
 }
