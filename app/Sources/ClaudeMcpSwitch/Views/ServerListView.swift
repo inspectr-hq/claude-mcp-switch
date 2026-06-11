@@ -6,82 +6,36 @@ struct ServerListView: View {
     @State private var deletingServer: ManagedServer?
 
     var body: some View {
+        content
+            .sheet(item: $editingServer) { server in
+                ServerEditorSheet(server: server) { updatedServer in
+                    coordinator.updateServer(updatedServer)
+                }
+            }
+            .alert(
+                deleteAlertTitle,
+                isPresented: deleteAlertIsPresented,
+                presenting: deletingServer,
+                actions: deleteAlertActions,
+                message: deleteAlertMessage
+            )
+            .sheet(item: syncPreviewBinding) { preview in
+                SyncConfirmationSheet(preview: preview)
+                    .environmentObject(coordinator)
+            }
+            .alert(
+                syncRemovalAlertTitle,
+                isPresented: syncRemovalAlertIsPresented,
+                presenting: coordinator.syncRemovalWarning,
+                actions: syncRemovalAlertActions,
+                message: syncRemovalAlertMessage
+            )
+    }
+
+    private var content: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("MCP Servers")
-                        .font(.title2)
-                    Text("Your MCP Servers are stored locally and synced into Claude Desktop on demand.")
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                Button("Import from Claude Desktop") {
-                    coordinator.importFromClaudeConfig()
-                }
-                Button("Sync to Claude Desktop") {
-                    coordinator.requestSyncToClaudeConfig()
-                }
-                .buttonStyle(.borderedProminent)
-            }
-
-            List {
-                ForEach(coordinator.registry.servers) { server in
-                    HStack(spacing: 12) {
-                        Toggle(
-                            "",
-                            isOn: Binding(
-                                get: { server.enabled },
-                                set: { coordinator.setEnabled($0, for: server.id) }
-                            )
-                        )
-                        .labelsHidden()
-                        .toggleStyle(.switch)
-                        .controlSize(.small)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(server.name)
-                                .font(.headline)
-                            Text(server.config.command)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-
-                        Spacer()
-
-                        Text(server.updatedAt, style: .date)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        HStack(spacing: 8) {
-                            Button("Edit") {
-                                editingServer = server
-                            }
-
-                            Button("Delete") {
-                                deletingServer = server
-                            }
-                            .foregroundStyle(.red)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-            }
-            .overlay {
-                if coordinator.registry.servers.isEmpty {
-                    ContentUnavailableView {
-                        Label {
-                            Text("No MCP Servers")
-                        } icon: {
-                            Image(systemName: "server.rack")
-                                .rotationEffect(.degrees(180))
-                        }
-                    } description: {
-                        Text("Import from Claude Desktop or add MCP Servers in a later implementation pass.")
-                    }
-                }
-            }
+            header
+            serverList
 
             if let statusMessage = coordinator.statusMessage {
                 Text(statusMessage)
@@ -90,43 +44,57 @@ struct ServerListView: View {
             }
         }
         .padding()
-        .sheet(item: $editingServer) { server in
-            ServerEditorSheet(server: server) { updatedServer in
-                coordinator.updateServer(updatedServer)
+    }
+
+    private var header: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("MCP Servers")
+                    .font(.title2)
+                Text("Your MCP Servers are stored locally and synced into Claude Desktop on demand.")
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button("Import from Claude Desktop") {
+                coordinator.importFromClaudeConfig()
+            }
+            Button("Sync to Claude Desktop") {
+                coordinator.requestSyncToClaudeConfig()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
+    private var serverList: some View {
+        List {
+            ForEach(coordinator.registry.servers) { server in
+                ServerManagerRow(
+                    server: server,
+                    onToggle: { coordinator.setEnabled($0, for: server.id) },
+                    onEdit: { editingServer = server },
+                    onDelete: { deletingServer = server }
+                )
             }
         }
-        .alert(
-            deletingServer?.name.map { "Delete \($0)?" } ?? "",
-            isPresented: deleteAlertIsPresented,
-            presenting: deletingServer
-        ) { server in
-            Button("Cancel", role: .cancel) {
-                deletingServer = nil
+        .overlay {
+            if coordinator.registry.servers.isEmpty {
+                emptyState
             }
-            Button("Delete", role: .destructive) {
-                coordinator.deleteServer(server.id)
-                deletingServer = nil
-            }
-        } message: { server in
-            Text("This removes the MCP Server from Claude MCP Switch. It will no longer be available for sync unless you import or add it again.")
         }
-        .sheet(item: syncPreviewBinding) { preview in
-            SyncConfirmationSheet(preview: preview)
-                .environmentObject(coordinator)
-        }
-        .alert(
-            coordinator.syncRemovalWarning?.title ?? "",
-            isPresented: syncRemovalAlertIsPresented,
-            presenting: coordinator.syncRemovalWarning
-        ) { _ in
-            Button("Cancel", role: .cancel) {
-                coordinator.cancelSyncToClaudeConfig()
+    }
+
+    private var emptyState: some View {
+        ContentUnavailableView {
+            Label {
+                Text("No MCP Servers")
+            } icon: {
+                Image(systemName: "server.rack")
+                    .rotationEffect(.degrees(180))
             }
-            Button("Approve Sync", role: .destructive) {
-                coordinator.confirmSyncToClaudeConfig()
-            }
-        } message: { warning in
-            Text(warning.message)
+        } description: {
+            Text("Import from Claude Desktop or add MCP Servers in a later implementation pass.")
         }
     }
 
@@ -148,6 +116,29 @@ struct ServerListView: View {
         )
     }
 
+    private var deleteAlertTitle: String {
+        if let server = deletingServer {
+            return "Delete \(server.name)?"
+        }
+        return ""
+    }
+
+    @ViewBuilder
+    private func deleteAlertActions(server: ManagedServer) -> some View {
+        Button("Cancel", role: .cancel) {
+            deletingServer = nil
+        }
+        Button("Delete", role: .destructive) {
+            coordinator.deleteServer(server.id)
+            deletingServer = nil
+        }
+    }
+
+    @ViewBuilder
+    private func deleteAlertMessage(server: ManagedServer) -> some View {
+        Text("This removes the MCP Server from Claude MCP Switch. It will no longer be available for sync unless you import or add it again.")
+    }
+
     private var syncRemovalAlertIsPresented: Binding<Bool> {
         Binding(
             get: { coordinator.syncRemovalWarning != nil },
@@ -157,6 +148,71 @@ struct ServerListView: View {
                 }
             }
         )
+    }
+
+    private var syncRemovalAlertTitle: String {
+        if let warning = coordinator.syncRemovalWarning {
+            return warning.title
+        }
+        return ""
+    }
+
+    @ViewBuilder
+    private func syncRemovalAlertActions(warning: SyncRemovalWarning) -> some View {
+        Button("Cancel", role: .cancel) {
+            coordinator.cancelSyncToClaudeConfig()
+        }
+        Button("Approve Sync", role: .destructive) {
+            coordinator.confirmSyncToClaudeConfig()
+        }
+    }
+
+    @ViewBuilder
+    private func syncRemovalAlertMessage(warning: SyncRemovalWarning) -> some View {
+        Text(warning.message)
+    }
+}
+
+private struct ServerManagerRow: View {
+    let server: ManagedServer
+    let onToggle: (Bool) -> Void
+    let onEdit: () -> Void
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Toggle(
+                "",
+                isOn: Binding(
+                    get: { server.enabled },
+                    set: onToggle
+                )
+            )
+            .labelsHidden()
+            .toggleStyle(.switch)
+            .controlSize(.small)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(server.name)
+                    .font(.headline)
+                Text(server.config.command)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Text(server.updatedAt, style: .date)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 8) {
+                Button("Edit", action: onEdit)
+                Button("Delete", action: onDelete)
+                    .foregroundStyle(.red)
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 

@@ -148,7 +148,22 @@ final class AppCoordinator: ObservableObject {
 
         registry.servers[index].enabled = enabled
         registry.servers[index].updatedAt = Date()
-        saveRegistry()
+        let updatedServer = registry.servers[index]
+
+        do {
+            try registryStore.saveRegistry(registry)
+
+            if settings.directToggleSyncToClaudeConfig {
+                try configStore.syncServer(updatedServer)
+                statusMessage = updatedServer.enabled
+                    ? "Enabled MCP Server in Claude Desktop"
+                    : "Disabled MCP Server in Claude Desktop"
+            } else {
+                statusMessage = "Saved MCP Servers"
+            }
+        } catch {
+            statusMessage = "Failed to update MCP Server: \(error.localizedDescription)"
+        }
     }
 
     func updateServer(_ server: ManagedServer) {

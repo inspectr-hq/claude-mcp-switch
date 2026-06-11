@@ -26,7 +26,24 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("Registry") {
+            Section("Sync Behavior") {
+                Toggle(
+                    "Write toggle changes directly to Claude Desktop",
+                    isOn: Binding(
+                        get: { coordinator.settings.directToggleSyncToClaudeConfig },
+                        set: { newValue in
+                            coordinator.settings.directToggleSyncToClaudeConfig = newValue
+                            coordinator.saveSettings()
+                        }
+                    )
+                )
+
+                Text("When enabled, turning one MCP Server on or off updates only that single item in Claude Desktop's mcpServers list.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("MCP Servers Storage") {
                 Text(coordinator.registryStore.registryURL.path)
                     .font(.caption)
                     .textSelection(.enabled)
