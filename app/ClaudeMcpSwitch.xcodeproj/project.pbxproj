@@ -1,0 +1,592 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 70;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B00100010000000000000001 /* ClaudeMcpSwitchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */; };
+		B00100010000000000000002 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000002 /* AppSettings.swift */; };
+		B00100010000000000000003 /* ManagedServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000003 /* ManagedServer.swift */; };
+		B00100010000000000000004 /* ServerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000004 /* ServerRegistry.swift */; };
+		B00100010000000000000005 /* ClaudeDesktopConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000005 /* ClaudeDesktopConfig.swift */; };
+		B00100010000000000000006 /* FilePaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000006 /* FilePaths.swift */; };
+		B00100010000000000000007 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000007 /* BackupService.swift */; };
+		B00100010000000000000008 /* RegistryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000008 /* RegistryStore.swift */; };
+		B00100010000000000000009 /* ClaudeConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000009 /* ClaudeConfigStore.swift */; };
+		B0010001000000000000000C /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010001000000000000000C /* WindowManager.swift */; };
+		B0010001000000000000000E /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010001000000000000000E /* AppCoordinator.swift */; };
+		B00100010000000000000011 /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000011 /* MenuBarContentView.swift */; };
+		B00100010000000000000012 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000012 /* ServerListView.swift */; };
+		B00100010000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000013 /* SettingsView.swift */; };
+		B00100010000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000017 /* Assets.xcassets */; };
+		B00100010000000000000018 /* ClaudeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000018 /* ClaudeLogo.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DB302DE92FCC34B800175AFA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P00100010000000000000000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T00100010000000000000001;
+			remoteInfo = ClaudeMcpSwitch;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		DB302DE52FCC34B800175AFA /* ClaudeMcpSwitchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeMcpSwitchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00100010000000000000000 /* ClaudeMcpSwitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMcpSwitch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeMcpSwitchApp.swift; sourceTree = "<group>"; };
+		F00100010000000000000002 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		F00100010000000000000003 /* ManagedServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedServer.swift; sourceTree = "<group>"; };
+		F00100010000000000000004 /* ServerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerRegistry.swift; sourceTree = "<group>"; };
+		F00100010000000000000005 /* ClaudeDesktopConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeDesktopConfig.swift; sourceTree = "<group>"; };
+		F00100010000000000000006 /* FilePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePaths.swift; sourceTree = "<group>"; };
+		F00100010000000000000007 /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
+		F00100010000000000000008 /* RegistryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryStore.swift; sourceTree = "<group>"; };
+		F00100010000000000000009 /* ClaudeConfigStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConfigStore.swift; sourceTree = "<group>"; };
+		F0010001000000000000000C /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		F0010001000000000000000E /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		F00100010000000000000011 /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
+		F00100010000000000000012 /* ServerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListView.swift; sourceTree = "<group>"; };
+		F00100010000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F00100010000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F00100010000000000000018 /* ClaudeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ClaudeLogo.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		DB302DE62FCC34B800175AFA /* ClaudeMcpSwitchTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = ClaudeMcpSwitchTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DB302DE22FCC34B800175AFA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		P00100010000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G00100010000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				G00100010000000000000002 /* Sources/ClaudeMcpSwitch */,
+				DB302DE62FCC34B800175AFA /* ClaudeMcpSwitchTests */,
+				G00100010000000000000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		G00100010000000000000002 /* Sources/ClaudeMcpSwitch */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */,
+				G00100010000000000000004 /* Models */,
+				G00100010000000000000005 /* Services */,
+				G00100010000000000000007 /* ViewModels */,
+				G00100010000000000000008 /* Views */,
+				G00100010000000000000009 /* Resources */,
+			);
+			path = Sources/ClaudeMcpSwitch;
+			sourceTree = SOURCE_ROOT;
+		};
+		G00100010000000000000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000000 /* ClaudeMcpSwitch.app */,
+				DB302DE52FCC34B800175AFA /* ClaudeMcpSwitchTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		G00100010000000000000004 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000002 /* AppSettings.swift */,
+				F00100010000000000000003 /* ManagedServer.swift */,
+				F00100010000000000000004 /* ServerRegistry.swift */,
+				F00100010000000000000005 /* ClaudeDesktopConfig.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		G00100010000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000006 /* FilePaths.swift */,
+				F00100010000000000000007 /* BackupService.swift */,
+				F00100010000000000000008 /* RegistryStore.swift */,
+				F00100010000000000000009 /* ClaudeConfigStore.swift */,
+				F0010001000000000000000C /* WindowManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		G00100010000000000000007 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				F0010001000000000000000E /* AppCoordinator.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		G00100010000000000000008 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000011 /* MenuBarContentView.swift */,
+				F00100010000000000000012 /* ServerListView.swift */,
+				F00100010000000000000013 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		G00100010000000000000009 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F00100010000000000000017 /* Assets.xcassets */,
+				F00100010000000000000018 /* ClaudeLogo.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		DB302DE42FCC34B800175AFA /* ClaudeMcpSwitchTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DB302DED2FCC34B800175AFA /* Build configuration list for PBXNativeTarget "ClaudeMcpSwitchTests" */;
+			buildPhases = (
+				DB302DE12FCC34B800175AFA /* Sources */,
+				DB302DE22FCC34B800175AFA /* Frameworks */,
+				DB302DE32FCC34B800175AFA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DB302DEA2FCC34B800175AFA /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				DB302DE62FCC34B800175AFA /* ClaudeMcpSwitchTests */,
+			);
+			name = ClaudeMcpSwitchTests;
+			packageProductDependencies = (
+			);
+			productName = ClaudeMcpSwitchTests;
+			productReference = DB302DE52FCC34B800175AFA /* ClaudeMcpSwitchTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		T00100010000000000000001 /* ClaudeMcpSwitch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C00100010000000000000003 /* Build configuration list for PBXNativeTarget "ClaudeMcpSwitch" */;
+			buildPhases = (
+				P00100010000000000000002 /* Sources */,
+				P00100010000000000000001 /* Frameworks */,
+				P00100010000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ClaudeMcpSwitch;
+			productName = ClaudeMcpSwitch;
+			productReference = F00100010000000000000000 /* ClaudeMcpSwitch.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P00100010000000000000000 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					DB302DE42FCC34B800175AFA = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = T00100010000000000000001;
+					};
+					T00100010000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = C00100010000000000000001 /* Build configuration list for PBXProject "ClaudeMcpSwitch" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = G00100010000000000000001;
+			productRefGroup = G00100010000000000000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				T00100010000000000000001 /* ClaudeMcpSwitch */,
+				DB302DE42FCC34B800175AFA /* ClaudeMcpSwitchTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DB302DE32FCC34B800175AFA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		P00100010000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100010000000000000017 /* Assets.xcassets in Resources */,
+				B00100010000000000000018 /* ClaudeLogo.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		DB302DE12FCC34B800175AFA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		P00100010000000000000002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B00100010000000000000001 /* ClaudeMcpSwitchApp.swift in Sources */,
+				B00100010000000000000002 /* AppSettings.swift in Sources */,
+				B00100010000000000000003 /* ManagedServer.swift in Sources */,
+				B00100010000000000000004 /* ServerRegistry.swift in Sources */,
+				B00100010000000000000005 /* ClaudeDesktopConfig.swift in Sources */,
+				B00100010000000000000006 /* FilePaths.swift in Sources */,
+				B00100010000000000000007 /* BackupService.swift in Sources */,
+				B00100010000000000000008 /* RegistryStore.swift in Sources */,
+				B00100010000000000000009 /* ClaudeConfigStore.swift in Sources */,
+				B0010001000000000000000C /* WindowManager.swift in Sources */,
+				B0010001000000000000000E /* AppCoordinator.swift in Sources */,
+				B00100010000000000000011 /* MenuBarContentView.swift in Sources */,
+				B00100010000000000000012 /* ServerListView.swift in Sources */,
+				B00100010000000000000013 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DB302DEA2FCC34B800175AFA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T00100010000000000000001 /* ClaudeMcpSwitch */;
+			targetProxy = DB302DE92FCC34B800175AFA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		C00100010000000000000004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		C00100010000000000000005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		C00100010000000000000006 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Claude MCP Switch";
+				INFOPLIST_KEY_CFBundleName = "Claude MCP Switch";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_LSUIElement = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inspectr.ClaudeMcpSwitch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		C00100010000000000000007 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Claude MCP Switch";
+				INFOPLIST_KEY_CFBundleName = "Claude MCP Switch";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_LSUIElement = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inspectr.ClaudeMcpSwitch;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		DB302DEB2FCC34B800175AFA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = KB487ZXYJ3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inspectr.ClaudeMcpSwitch.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeMcpSwitch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClaudeMcpSwitch";
+			};
+			name = Debug;
+		};
+		DB302DEC2FCC34B800175AFA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = KB487ZXYJ3;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.inspectr.ClaudeMcpSwitch.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeMcpSwitch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ClaudeMcpSwitch";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C00100010000000000000001 /* Build configuration list for PBXProject "ClaudeMcpSwitch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C00100010000000000000004 /* Debug */,
+				C00100010000000000000005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C00100010000000000000003 /* Build configuration list for PBXNativeTarget "ClaudeMcpSwitch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C00100010000000000000006 /* Debug */,
+				C00100010000000000000007 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DB302DED2FCC34B800175AFA /* Build configuration list for PBXNativeTarget "ClaudeMcpSwitchTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB302DEB2FCC34B800175AFA /* Debug */,
+				DB302DEC2FCC34B800175AFA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = P00100010000000000000000 /* Project object */;
+}
