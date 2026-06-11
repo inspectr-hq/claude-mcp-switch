@@ -5,10 +5,23 @@ struct MCPServerConfig: Codable, Equatable {
     var args: [String]
     var env: [String: String]
 
+    private enum CodingKeys: String, CodingKey {
+        case command
+        case args
+        case env
+    }
+
     init(command: String, args: [String] = [], env: [String: String] = [:]) {
         self.command = command
         self.args = args
         self.env = env
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        command = try container.decode(String.self, forKey: .command)
+        args = try container.decodeIfPresent([String].self, forKey: .args) ?? []
+        env = try container.decodeIfPresent([String: String].self, forKey: .env) ?? [:]
     }
 }
 

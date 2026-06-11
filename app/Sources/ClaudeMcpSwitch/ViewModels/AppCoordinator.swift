@@ -106,6 +106,18 @@ final class AppCoordinator: ObservableObject {
         saveRegistry()
     }
 
+    func updateServer(_ server: ManagedServer) {
+        guard let index = registry.servers.firstIndex(where: { $0.id == server.id }) else {
+            return
+        }
+
+        var updatedServer = server
+        updatedServer.updatedAt = Date()
+        registry.servers[index] = updatedServer
+        registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        saveRegistry()
+    }
+
     private static func loadSettings(from defaults: UserDefaults) -> AppSettings {
         guard
             let data = defaults.data(forKey: "claude_mcp_switch.settings"),

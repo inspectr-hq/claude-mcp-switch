@@ -22,6 +22,7 @@
 		B00100010000000000000012 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000012 /* ServerListView.swift */; };
 		B00100010000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000013 /* SettingsView.swift */; };
 		B00100010000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000017 /* Assets.xcassets */; };
+		B00100010000000000000018 /* ClaudeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000018 /* ClaudeLogo.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		F00100010000000000000012 /* ServerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListView.swift; sourceTree = "<group>"; };
 		F00100010000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F00100010000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F00100010000000000000018 /* ClaudeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ClaudeLogo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -152,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				F00100010000000000000017 /* Assets.xcassets */,
+				F00100010000000000000018 /* ClaudeLogo.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B00100010000000000000017 /* Assets.xcassets in Resources */,
+				B00100010000000000000018 /* ClaudeLogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
