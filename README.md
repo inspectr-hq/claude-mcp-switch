@@ -4,6 +4,8 @@
 
 Claude MCP Switch is a native macOS menu bar app for managing Claude Desktop configured MCP Servers.
 
+![Menu Bar](./content/claude-mcp-switch-menu-bar-bg-color.png)
+
 It gives you a fast desktop UI for quickly enabling or disabling the MCP server from Claude Desktop App, instead of having to edit the JSON config file. 
 
 ![macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
@@ -25,9 +27,9 @@ It gives you a fast desktop UI for quickly enabling or disabling the MCP server 
 
 ## Screenshots
 
-| Menu Bar | MCP Servers | Edit Server | Settings |
-| -------- | ----------- | ----------- | -------- |
-| `Placeholder` | `Placeholder` | `Placeholder` | `Placeholder` |
+| Menu Bar | MCP Servers | Edit Server | 
+| -------- | ----------- | ----------- | 
+| ![Menu Bar](./content/claude-mcp-switch-menu-bar.png) | ![MCP Server](./content/claude-mcp-switch-manager.png) | ![Edit form](./content/claude-mcp-switch-form.png)` | 
 
 ## Get Started
 
@@ -75,21 +77,6 @@ If Finder still blocks the app, use:
 4. Review and enable the MCP Servers you want to manage.
 5. Use `Sync to Claude Desktop` when you want Claude Desktop `mcpServers` to match the enabled set.
 
-## Storage
-
-Claude MCP Switch stores its local data in:
-
-```text
-~/Library/Application Support/com.trinix.ClaudeMcpSwitch/
-```
-
-Important files:
-
-- `servers.json`: saved MCP Servers used by the app
-- `backups/`: backups created before overwriting local or Claude config files
-
-By default, Claude Desktop config is read from its standard path unless you override it in app settings.
-
 ## Sync Behavior
 
 When you sync to Claude Desktop:
@@ -130,17 +117,3 @@ swift test --package-path app
 ```bash
 open app/ClaudeMcpSwitch.xcodeproj
 ```
-
-## CI
-
-GitHub Actions currently runs one workflow:
-
-- `.github/workflows/tests.yaml`
-
-It runs `swift test` for pull requests on `macos-latest`.
-
-## Release Status
-
-Release automation is not active in this phase.
-
-See [RELEASE.md](RELEASE.md) for the current manual release posture and what would need to be added before public distribution.
