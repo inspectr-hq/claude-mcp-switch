@@ -20,7 +20,7 @@ struct ServerListView: View {
                     coordinator.importFromClaudeConfig()
                 }
                 Button("Sync to Claude Desktop") {
-                    coordinator.syncToClaudeConfig()
+                    coordinator.requestSyncToClaudeConfig()
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -62,11 +62,16 @@ struct ServerListView: View {
             }
             .overlay {
                 if coordinator.registry.servers.isEmpty {
-                    ContentUnavailableView(
-                        "No Managed Servers",
-                        systemImage: "server.rack",
-                        description: Text("Import from Claude Desktop or add registry data in a later implementation pass.")
-                    )
+                    ContentUnavailableView {
+                        Label {
+                            Text("No Managed Servers")
+                        } icon: {
+                            Image(systemName: "server.rack")
+                                .rotationEffect(.degrees(180))
+                        }
+                    } description: {
+                        Text("Import from Claude Desktop or add registry data in a later implementation pass.")
+                    }
                 }
             }
 
@@ -82,6 +87,42 @@ struct ServerListView: View {
                 coordinator.updateServer(updatedServer)
             }
         }
+        .sheet(item: syncPreviewBinding) { preview in
+            SyncConfirmationSheet(preview: preview)
+                .environmentObject(coordinator)
+        }
+        .alert(
+            coordinator.syncRemovalWarning?.title ?? "",
+            isPresented: syncRemovalAlertIsPresented,
+            presenting: coordinator.syncRemovalWarning
+        ) { _ in
+            Button("Cancel", role: .cancel) {
+                coordinator.cancelSyncToClaudeConfig()
+            }
+            Button("Approve Sync", role: .destructive) {
+                coordinator.confirmSyncToClaudeConfig()
+            }
+        } message: { warning in
+            Text(warning.message)
+        }
+    }
+
+    private var syncPreviewBinding: Binding<SyncPreview?> {
+        Binding(
+            get: { coordinator.syncPreview },
+            set: { coordinator.syncPreview = $0 }
+        )
+    }
+
+    private var syncRemovalAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { coordinator.syncRemovalWarning != nil },
+            set: { isPresented in
+                if !isPresented {
+                    coordinator.syncRemovalWarning = nil
+                }
+            }
+        )
     }
 }
 
@@ -120,8 +161,16 @@ private struct ServerEditorSheet: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    GroupBox("General") {
+                    GroupBox {
                         VStack(alignment: .leading, spacing: 12) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("General")
+                                    .font(.headline)
+                                Text("Basic server identity and activation state.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
                             labeledRow("Name") {
                                 TextField("Server name", text: $draft.name)
                                     .textFieldStyle(.roundedBorder)
@@ -141,6 +190,8 @@ private struct ServerEditorSheet: View {
                             }
                         }
                         .padding(.top, 8)
+                    } label: {
+                        EmptyView()
                     }
 
                     GroupBox {
@@ -279,7 +330,7 @@ private struct ServerEditorSheet: View {
             .padding(16)
             .background(.bar)
         }
-        .frame(width: 640, height: 720)
+        .frame(width: 640, height: 840)
     }
 
     @ViewBuilder
@@ -394,6 +445,234 @@ private enum ServerEditorError: LocalizedError {
         switch self {
         case .invalidEnvironmentKey:
             return "Environment variable keys cannot be empty."
+        }
+    }
+}
+
+struct SyncConfirmationSheet: View {
+    @EnvironmentObject var coordinator: AppCoordinator
+
+    let preview: SyncPreview
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Review Claude Desktop Changes")
+                            .font(.title2)
+                        Text("Claude MCP Switch is about to update the `mcpServers` block in Claude Desktop.")
+                            .foregroundStyle(.secondary)
+                        Text(preview.configPath)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                            .textSelection(.enabled)
+                    }
+
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Summary")
+                                .font(.headline)
+
+                            HStack(spacing: 16) {
+                                summaryPill("\(preview.currentCount)", label: "Current")
+                                summaryPill("\(preview.desiredCount)", label: "After Sync")
+                                summaryPill("+\(preview.additions.count)", label: "Add")
+                                summaryPill("~\(preview.updates.count)", label: "Update")
+                                summaryPill("-\(preview.removals.count)", label: "Remove")
+                            }
+
+                            if preview.unchangedCount > 0 {
+                                Text("\(preview.unchangedCount) server configurations will stay unchanged.")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.top, 8)
+                    } label: {
+                        EmptyView()
+                    }
+
+                    if !preview.additions.isEmpty {
+                        syncChangeSection(
+                            title: "Additions",
+                            subtitle: "These servers exist in the registry and will be written into Claude Desktop.",
+                            changes: preview.additions,
+                            style: .addition
+                        )
+                    }
+
+                    if !preview.updates.isEmpty {
+                        syncChangeSection(
+                            title: "Updates",
+                            subtitle: "These existing Claude Desktop entries will be replaced with the registry version.",
+                            changes: preview.updates,
+                            style: .update
+                        )
+                    }
+
+                    if !preview.removals.isEmpty {
+                        syncChangeSection(
+                            title: "Removals",
+                            subtitle: "These servers exist in Claude Desktop now but are not enabled in the registry.",
+                            changes: preview.removals,
+                            style: .removal
+                        )
+                    }
+                }
+                .padding(20)
+            }
+
+            Divider()
+
+            HStack {
+                Text("This only updates `mcpServers`. Other Claude Desktop keys stay intact.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer()
+
+                Button("Cancel") {
+                    coordinator.cancelSyncToClaudeConfig()
+                }
+
+                Button("Approve Sync") {
+                    coordinator.confirmSyncToClaudeConfig()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding(16)
+            .background(.bar)
+        }
+        .frame(width: 720, height: 680)
+    }
+
+    @ViewBuilder
+    private func syncChangeSection(
+        title: String,
+        subtitle: String,
+        changes: [SyncPreviewChange],
+        style: SyncChangeStyle
+    ) -> some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.headline)
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                ForEach(changes) { change in
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text(change.name)
+                                .font(.headline)
+                            Spacer()
+                            Text(style.badgeText)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(style.tint)
+                        }
+
+                        switch style {
+                        case .addition:
+                            if let desiredConfig = change.desiredConfig {
+                                configCard("Will Add", config: desiredConfig)
+                            }
+                        case .update:
+                            if let currentConfig = change.currentConfig {
+                                configCard("Current", config: currentConfig)
+                            }
+                            if let desiredConfig = change.desiredConfig {
+                                configCard("New", config: desiredConfig)
+                            }
+                        case .removal:
+                            if let currentConfig = change.currentConfig {
+                                configCard("Will Remove", config: currentConfig)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+            }
+            .padding(.top, 8)
+        } label: {
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private func configCard(_ title: String, config: MCPServerConfig) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.medium))
+                .foregroundStyle(.secondary)
+
+            Text(config.command)
+                .font(.callout.monospaced())
+
+            if !config.args.isEmpty {
+                Text("Args: \(config.args.joined(separator: " "))")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
+                    .lineLimit(3)
+            }
+
+            if !config.env.isEmpty {
+                Text("Env: \(config.env.keys.sorted().joined(separator: ", "))")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(10)
+        .background(Color.secondary.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    @ViewBuilder
+    private func summaryPill(_ value: String, label: String) -> some View {
+        VStack(spacing: 2) {
+            Text(value)
+                .font(.headline)
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(minWidth: 72)
+        .padding(.vertical, 8)
+        .background(Color.secondary.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+}
+
+private enum SyncChangeStyle {
+    case addition
+    case update
+    case removal
+
+    var badgeText: String {
+        switch self {
+        case .addition:
+            return "ADD"
+        case .update:
+            return "UPDATE"
+        case .removal:
+            return "REMOVE"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .addition:
+            return .green
+        case .update:
+            return .orange
+        case .removal:
+            return .red
         }
     }
 }

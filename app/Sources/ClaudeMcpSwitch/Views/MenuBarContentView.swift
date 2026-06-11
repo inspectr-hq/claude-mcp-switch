@@ -43,16 +43,17 @@ struct MenuBarContentView: View {
                 }
             }
 
-            Divider()
-            menuAction("Manage MCP servers") {
-                WindowManager.shared.showManager(coordinator: coordinator)
-            }
+         
             Divider()
             menuAction("Sync to Claude Desktop") {
-                coordinator.syncToClaudeConfig()
+                coordinator.requestSyncToClaudeConfig()
             }
             menuAction("Import from Claude Desktop") {
                 coordinator.importFromClaudeConfig()
+            }
+            Divider()
+            menuAction("Manage MCP servers") {
+                WindowManager.shared.showManager(coordinator: coordinator)
             }
             Divider()
             menuAction("Settings…") {
@@ -65,6 +66,24 @@ struct MenuBarContentView: View {
         }
         .padding(8)
         .frame(width: 280, alignment: .leading)
+        .sheet(item: syncPreviewBinding) { preview in
+            SyncConfirmationSheet(preview: preview)
+                .environmentObject(coordinator)
+        }
+        .alert(
+            coordinator.syncRemovalWarning?.title ?? "",
+            isPresented: syncRemovalAlertIsPresented,
+            presenting: coordinator.syncRemovalWarning
+        ) { _ in
+            Button("Cancel", role: .cancel) {
+                coordinator.cancelSyncToClaudeConfig()
+            }
+            Button("Approve Sync", role: .destructive) {
+                coordinator.confirmSyncToClaudeConfig()
+            }
+        } message: { warning in
+            Text(warning.message)
+        }
     }
 
     @ViewBuilder
@@ -84,6 +103,25 @@ struct MenuBarContentView: View {
     @ViewBuilder
     private func serverRow(_ server: ManagedServer) -> some View {
         HStack(spacing: 10) {
+            Button {
+                coordinator.setEnabled(!server.enabled, for: server.id)
+            } label: {
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(server.name)
+                            .lineLimit(1)
+                        Text(server.config.command)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
             Toggle(
                 "",
                 isOn: Binding(
@@ -94,17 +132,6 @@ struct MenuBarContentView: View {
             .labelsHidden()
             .toggleStyle(.switch)
             .controlSize(.small)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(server.name)
-                    .lineLimit(1)
-                Text(server.config.command)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 2)
@@ -123,5 +150,23 @@ struct MenuBarContentView: View {
 #else
         return Bundle.main
 #endif
+    }
+
+    private var syncPreviewBinding: Binding<SyncPreview?> {
+        Binding(
+            get: { coordinator.syncPreview },
+            set: { coordinator.syncPreview = $0 }
+        )
+    }
+
+    private var syncRemovalAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { coordinator.syncRemovalWarning != nil },
+            set: { isPresented in
+                if !isPresented {
+                    coordinator.syncRemovalWarning = nil
+                }
+            }
+        )
     }
 }

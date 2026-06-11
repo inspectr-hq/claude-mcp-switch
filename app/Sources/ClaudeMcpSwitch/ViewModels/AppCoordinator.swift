@@ -6,6 +6,8 @@ final class AppCoordinator: ObservableObject {
     @Published var settings: AppSettings
     @Published var registry: ServerRegistry
     @Published var statusMessage: String?
+    @Published var syncPreview: SyncPreview?
+    @Published var syncRemovalWarning: SyncRemovalWarning?
 
     let registryStore: RegistryStore
 
@@ -61,14 +63,57 @@ final class AppCoordinator: ObservableObject {
         }
     }
 
-    func syncToClaudeConfig() {
+    func requestSyncToClaudeConfig() {
+        do {
+            let currentConfig = try configStore.loadConfig()
+            let enabledServers = registry.servers
+                .filter(\.enabled)
+                .reduce(into: [String: MCPServerConfig]()) { result, server in
+                    result[server.name] = server.config
+                }
+
+            let preview = SyncPreview(
+                configPath: effectiveClaudeConfigPath,
+                currentServers: currentConfig.mcpServers,
+                desiredServers: enabledServers
+            )
+
+            guard preview.hasChanges else {
+                statusMessage = "Claude Desktop already matches the enabled registry servers"
+                return
+            }
+
+            if !preview.additions.isEmpty || !preview.updates.isEmpty {
+                syncRemovalWarning = nil
+                syncPreview = preview
+            } else if !preview.removals.isEmpty {
+                syncPreview = nil
+                syncRemovalWarning = SyncRemovalWarning(
+                    configPath: effectiveClaudeConfigPath,
+                    removals: preview.removals.map(\.name)
+                )
+            }
+        } catch {
+            statusMessage = "Sync preview failed: \(error.localizedDescription)"
+        }
+    }
+
+    func confirmSyncToClaudeConfig() {
         do {
             try registryStore.saveRegistry(registry)
             try configStore.syncEnabledServers(from: registry)
+            syncPreview = nil
+            syncRemovalWarning = nil
             statusMessage = "Synced enabled servers to Claude Desktop"
         } catch {
             statusMessage = "Sync failed: \(error.localizedDescription)"
         }
+    }
+
+    func cancelSyncToClaudeConfig() {
+        syncPreview = nil
+        syncRemovalWarning = nil
+        statusMessage = "Sync cancelled"
     }
 
     func importFromClaudeConfig() {
@@ -127,5 +172,101 @@ final class AppCoordinator: ObservableObject {
         }
 
         return settings
+    }
+}
+
+struct SyncPreview: Identifiable {
+    let id = UUID()
+    let configPath: String
+    let additions: [SyncPreviewChange]
+    let updates: [SyncPreviewChange]
+    let removals: [SyncPreviewChange]
+    let unchangedCount: Int
+
+    init(
+        configPath: String,
+        currentServers: [String: MCPServerConfig],
+        desiredServers: [String: MCPServerConfig]
+    ) {
+        var additions: [SyncPreviewChange] = []
+        var updates: [SyncPreviewChange] = []
+        var removals: [SyncPreviewChange] = []
+        var unchangedCount = 0
+
+        let allNames = Set(currentServers.keys).union(desiredServers.keys)
+
+        for name in allNames.sorted(by: { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }) {
+            let current = currentServers[name]
+            let desired = desiredServers[name]
+
+            switch (current, desired) {
+            case let (nil, .some(desiredConfig)):
+                additions.append(
+                    SyncPreviewChange(name: name, currentConfig: nil, desiredConfig: desiredConfig)
+                )
+            case let (.some(currentConfig), nil):
+                removals.append(
+                    SyncPreviewChange(name: name, currentConfig: currentConfig, desiredConfig: nil)
+                )
+            case let (.some(currentConfig), .some(desiredConfig)):
+                if currentConfig == desiredConfig {
+                    unchangedCount += 1
+                } else {
+                    updates.append(
+                        SyncPreviewChange(
+                            name: name,
+                            currentConfig: currentConfig,
+                            desiredConfig: desiredConfig
+                        )
+                    )
+                }
+            case (nil, nil):
+                break
+            }
+        }
+
+        self.configPath = configPath
+        self.additions = additions
+        self.updates = updates
+        self.removals = removals
+        self.unchangedCount = unchangedCount
+    }
+
+    var currentCount: Int {
+        updates.count + removals.count + unchangedCount
+    }
+
+    var desiredCount: Int {
+        additions.count + updates.count + unchangedCount
+    }
+
+    var changeCount: Int {
+        additions.count + updates.count + removals.count
+    }
+
+    var hasChanges: Bool {
+        changeCount > 0
+    }
+}
+
+struct SyncPreviewChange: Identifiable {
+    let id = UUID()
+    let name: String
+    let currentConfig: MCPServerConfig?
+    let desiredConfig: MCPServerConfig?
+}
+
+struct SyncRemovalWarning: Identifiable {
+    let id = UUID()
+    let configPath: String
+    let removals: [String]
+
+    var title: String {
+        removals.count == 1 ? "Remove 1 Server From Claude Desktop?" : "Remove \(removals.count) Servers From Claude Desktop?"
+    }
+
+    var message: String {
+        let names = removals.joined(separator: ", ")
+        return "Claude Desktop currently contains these MCP servers: \(names). They are not enabled in Claude MCP Switch, so approving sync will remove them from Claude Desktop's mcpServers list."
     }
 }
