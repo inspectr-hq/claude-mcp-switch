@@ -126,6 +126,42 @@ struct AppCoordinatorTests {
         #expect(config.mcpServers["GitHub"]?.command == "npx")
     }
 
+    @Test func confirmSyncMarksClaudeDesktopForRestartOnlyWhenRunning() throws {
+        let runningHarness = try CoordinatorTestHarness(isClaudeDesktopRunning: true)
+        try runningHarness.writeClaudeConfig(
+            """
+            {
+              "mcpServers": {}
+            }
+            """
+        )
+        runningHarness.coordinator.registry = ServerRegistry(servers: [
+            ManagedServer(name: "GitHub", enabled: true, config: MCPServerConfig(command: "npx"))
+        ])
+
+        runningHarness.coordinator.confirmSyncToClaudeConfig()
+
+        #expect(runningHarness.coordinator.needsClaudeDesktopRestart == true)
+        #expect(runningHarness.coordinator.shouldShowClaudeDesktopRestartAction == true)
+
+        let stoppedHarness = try CoordinatorTestHarness(isClaudeDesktopRunning: false)
+        try stoppedHarness.writeClaudeConfig(
+            """
+            {
+              "mcpServers": {}
+            }
+            """
+        )
+        stoppedHarness.coordinator.registry = ServerRegistry(servers: [
+            ManagedServer(name: "GitHub", enabled: true, config: MCPServerConfig(command: "npx"))
+        ])
+
+        stoppedHarness.coordinator.confirmSyncToClaudeConfig()
+
+        #expect(stoppedHarness.coordinator.needsClaudeDesktopRestart == false)
+        #expect(stoppedHarness.coordinator.shouldShowClaudeDesktopRestartAction == false)
+    }
+
     @Test func directToggleSyncUpdatesOnlyChangedServerInClaudeConfig() throws {
         let harness = try CoordinatorTestHarness()
         try harness.writeClaudeConfig(
@@ -158,6 +194,52 @@ struct AppCoordinatorTests {
         #expect(config.mcpServers.keys.sorted() == ["Keep"])
         #expect(config.mcpServers["Keep"]?.args == ["keep.js"])
     }
+
+    @Test func directToggleSyncMarksClaudeDesktopForRestartWhenRunning() throws {
+        let harness = try CoordinatorTestHarness(isClaudeDesktopRunning: true)
+        try harness.writeClaudeConfig(
+            """
+            {
+              "mcpServers": {
+                "Target": {
+                  "command": "python",
+                  "args": ["old.py"]
+                }
+              }
+            }
+            """
+        )
+
+        harness.coordinator.settings.directToggleSyncToClaudeConfig = true
+        let target = ManagedServer(name: "Target", enabled: true, config: MCPServerConfig(command: "python", args: ["old.py"]))
+        harness.coordinator.registry.servers = [target]
+
+        harness.coordinator.setEnabled(false, for: target.id)
+
+        #expect(harness.coordinator.needsClaudeDesktopRestart == true)
+        #expect(harness.coordinator.shouldShowClaudeDesktopRestartAction == true)
+    }
+
+    @Test func claudeDesktopTerminationClearsRestartReminder() throws {
+        let harness = try CoordinatorTestHarness(isClaudeDesktopRunning: true)
+        harness.coordinator.needsClaudeDesktopRestart = true
+
+        harness.desktopService.emitRunningState(false)
+
+        #expect(harness.coordinator.isClaudeDesktopRunning == false)
+        #expect(harness.coordinator.needsClaudeDesktopRestart == false)
+        #expect(harness.coordinator.shouldShowClaudeDesktopRestartAction == false)
+    }
+
+    @Test func restartClaudeDesktopClearsReminderAndInvokesService() async throws {
+        let harness = try CoordinatorTestHarness(isClaudeDesktopRunning: true)
+        harness.coordinator.needsClaudeDesktopRestart = true
+
+        await harness.coordinator.restartClaudeDesktopToApplyChanges()
+
+        #expect(harness.desktopService.restartCallCount == 1)
+        #expect(harness.coordinator.needsClaudeDesktopRestart == false)
+    }
 }
 
 @MainActor
@@ -166,9 +248,10 @@ private struct CoordinatorTestHarness {
     let appSupportURL: URL
     let claudeDirectoryURL: URL
     let claudeConfigURL: URL
+    let desktopService: TestClaudeDesktopService
     let coordinator: AppCoordinator
 
-    init() throws {
+    init(isClaudeDesktopRunning: Bool = false) throws {
         let rootURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         self.rootURL = rootURL
@@ -181,10 +264,16 @@ private struct CoordinatorTestHarness {
         try FileManager.default.createDirectory(at: claudeDirectoryURL, withIntermediateDirectories: true)
 
         let defaults = UserDefaults(suiteName: "AppCoordinatorTests.\(UUID().uuidString)")!
+        let desktopService = TestClaudeDesktopService(isRunning: isClaudeDesktopRunning)
+        self.desktopService = desktopService
 
         let fileManager = TestFileManager(appSupportURL: appSupportURL)
         let paths = FilePaths(fileManager: fileManager, homeDirectoryURL: rootURL)
-        self.coordinator = AppCoordinator(paths: paths, settingsDefaults: defaults)
+        self.coordinator = AppCoordinator(
+            paths: paths,
+            settingsDefaults: defaults,
+            claudeDesktopService: desktopService
+        )
     }
 
     func loadRegistry() throws -> ServerRegistry {
@@ -214,5 +303,30 @@ private final class TestFileManager: FileManager {
             return [appSupportURL]
         }
         return super.urls(for: directory, in: domainMask)
+    }
+}
+
+@MainActor
+private final class TestClaudeDesktopService: ClaudeDesktopServicing {
+    var isRunning: Bool
+    var restartCallCount = 0
+    private var handler: (@MainActor (Bool) -> Void)?
+
+    init(isRunning: Bool) {
+        self.isRunning = isRunning
+    }
+
+    func setRunningStateDidChangeHandler(_ handler: (@MainActor (Bool) -> Void)?) {
+        self.handler = handler
+    }
+
+    func restartClaudeDesktop() async throws {
+        restartCallCount += 1
+        isRunning = true
+    }
+
+    func emitRunningState(_ isRunning: Bool) {
+        self.isRunning = isRunning
+        handler?(isRunning)
     }
 }

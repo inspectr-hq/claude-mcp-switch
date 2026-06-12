@@ -8,19 +8,25 @@ final class AppCoordinator: ObservableObject {
     @Published var statusMessage: String?
     @Published var syncPreview: SyncPreview?
     @Published var syncRemovalWarning: SyncRemovalWarning?
+    @Published var isClaudeDesktopRunning: Bool
+    @Published var needsClaudeDesktopRestart: Bool = false
 
     let registryStore: RegistryStore
 
     private let paths: FilePaths
     private let configBackupService: BackupService
     private let settingsDefaults: UserDefaults
+    private let claudeDesktopService: ClaudeDesktopServicing
 
     init(
         paths: FilePaths = FilePaths(),
-        settingsDefaults: UserDefaults = .standard
+        settingsDefaults: UserDefaults = .standard,
+        claudeDesktopService: ClaudeDesktopServicing? = nil
     ) {
         self.paths = paths
         self.settingsDefaults = settingsDefaults
+        let resolvedClaudeDesktopService = claudeDesktopService ?? ClaudeDesktopService()
+        self.claudeDesktopService = resolvedClaudeDesktopService
         self.registryStore = RegistryStore(
             registryURL: paths.registryURL,
             backupsDirectoryURL: paths.backupsDirectoryURL
@@ -28,6 +34,10 @@ final class AppCoordinator: ObservableObject {
         self.configBackupService = BackupService(backupsDirectoryURL: paths.backupsDirectoryURL)
         self.settings = Self.loadSettings(from: settingsDefaults)
         self.registry = (try? registryStore.loadRegistry()) ?? ServerRegistry()
+        self.isClaudeDesktopRunning = resolvedClaudeDesktopService.isRunning
+        resolvedClaudeDesktopService.setRunningStateDidChangeHandler { [weak self] isRunning in
+            self?.handleClaudeDesktopRunningStateChange(isRunning)
+        }
     }
 
     var effectiveClaudeConfigPath: String {
@@ -104,7 +114,9 @@ final class AppCoordinator: ObservableObject {
             try configStore.syncEnabledServers(from: registry)
             syncPreview = nil
             syncRemovalWarning = nil
-            statusMessage = "Synced enabled servers to Claude Desktop"
+            markClaudeDesktopNeedsRestartIfRunning(
+                baseStatusMessage: "Synced enabled servers to Claude Desktop"
+            )
         } catch {
             statusMessage = "Sync failed: \(error.localizedDescription)"
         }
@@ -155,15 +167,35 @@ final class AppCoordinator: ObservableObject {
 
             if settings.directToggleSyncToClaudeConfig {
                 try configStore.syncServer(updatedServer)
-                statusMessage = updatedServer.enabled
-                    ? "Enabled MCP Server in Claude Desktop"
-                    : "Disabled MCP Server in Claude Desktop"
+                markClaudeDesktopNeedsRestartIfRunning(
+                    baseStatusMessage: updatedServer.enabled
+                        ? "Enabled MCP Server in Claude Desktop"
+                        : "Disabled MCP Server in Claude Desktop"
+                )
             } else {
                 statusMessage = "Saved MCP Servers"
             }
         } catch {
             statusMessage = "Failed to update MCP Server: \(error.localizedDescription)"
         }
+    }
+
+    func restartClaudeDesktopToApplyChanges() async {
+        guard needsClaudeDesktopRestart, isClaudeDesktopRunning else {
+            return
+        }
+
+        do {
+            try await claudeDesktopService.restartClaudeDesktop()
+            needsClaudeDesktopRestart = false
+            statusMessage = "Restarted Claude Desktop to apply changes"
+        } catch {
+            statusMessage = "Claude Desktop restart failed: \(error.localizedDescription)"
+        }
+    }
+
+    var shouldShowClaudeDesktopRestartAction: Bool {
+        needsClaudeDesktopRestart && isClaudeDesktopRunning
     }
 
     func updateServer(_ server: ManagedServer) {
@@ -234,6 +266,22 @@ final class AppCoordinator: ObservableObject {
         }
 
         return "\(baseName) \(index)"
+    }
+
+    private func markClaudeDesktopNeedsRestartIfRunning(baseStatusMessage: String) {
+        if isClaudeDesktopRunning {
+            needsClaudeDesktopRestart = true
+            statusMessage = "\(baseStatusMessage). Restart Claude Desktop to apply changes."
+        } else {
+            statusMessage = baseStatusMessage
+        }
+    }
+
+    private func handleClaudeDesktopRunningStateChange(_ isRunning: Bool) {
+        isClaudeDesktopRunning = isRunning
+        if !isRunning {
+            needsClaudeDesktopRestart = false
+        }
     }
 }
 
