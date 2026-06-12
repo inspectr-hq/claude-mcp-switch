@@ -9,9 +9,8 @@ Claude MCP Switch is a native macOS menu bar app for managing Claude Desktop con
 It gives you a fast desktop UI for quickly enabling or disabling the MCP server from Claude Desktop App, instead of having to edit the JSON config file. 
 
 ![macOS](https://img.shields.io/badge/platform-macOS-lightgrey)
-![Swift](https://img.shields.io/badge/language-Swift-orange)
-![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-blue)
-![Tests](https://img.shields.io/github/actions/workflow/status/inspectr-hq/claude-mcp-switch/tests.yaml?label=tests)
+![Latest Release](https://img.shields.io/github/v/release/inspectr-hq/claude-mcp-switch?label=Latest%20Release)
+![Total Downloads](https://img.shields.io/github/downloads/inspectr-hq/claude-mcp-switch/total?label=Total%20Downloads)
 
 ## Features
 
