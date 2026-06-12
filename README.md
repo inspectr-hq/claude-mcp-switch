@@ -12,7 +12,7 @@ It gives you a fast desktop UI for quickly enabling or disabling the MCP server 
 ![Latest Release](https://img.shields.io/github/v/release/inspectr-hq/claude-mcp-switch?label=Latest%20Release)
 ![Total Downloads](https://img.shields.io/github/downloads/inspectr-hq/claude-mcp-switch/total?label=Total%20Downloads)
 
-Prefer terminal flow? Use the CLI tool: [jandroav/claude-mcp-switch](https://github.com/jandroav/claude-mcp-switch), a great zero-dependency `npx` tool for listing, enabling and disabling Claude Code MCP servers.
+Prefer using terminal? Use the CLI tool: [jandroav/claude-mcp-switch](https://github.com/jandroav/claude-mcp-switch), a great zero-dependency `npx` tool for listing, enabling and disabling Claude Code MCP servers.
 
 ## Features
 
