@@ -16,6 +16,7 @@
 		B00100010000000000000007 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000007 /* BackupService.swift */; };
 		B00100010000000000000008 /* RegistryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000008 /* RegistryStore.swift */; };
 		B00100010000000000000009 /* ClaudeConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000009 /* ClaudeConfigStore.swift */; };
+		B0010001000000000000000A /* ClaudeDesktopService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010001000000000000000A /* ClaudeDesktopService.swift */; };
 		B0010001000000000000000C /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010001000000000000000C /* WindowManager.swift */; };
 		B0010001000000000000000E /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0010001000000000000000E /* AppCoordinator.swift */; };
 		B00100010000000000000011 /* MenuBarContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000011 /* MenuBarContentView.swift */; };
@@ -47,6 +48,7 @@
 		F00100010000000000000007 /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		F00100010000000000000008 /* RegistryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistryStore.swift; sourceTree = "<group>"; };
 		F00100010000000000000009 /* ClaudeConfigStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeConfigStore.swift; sourceTree = "<group>"; };
+		F0010001000000000000000A /* ClaudeDesktopService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeDesktopService.swift; sourceTree = "<group>"; };
 		F0010001000000000000000C /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		F0010001000000000000000E /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		F00100010000000000000011 /* MenuBarContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContentView.swift; sourceTree = "<group>"; };
@@ -127,6 +129,7 @@
 				F00100010000000000000007 /* BackupService.swift */,
 				F00100010000000000000008 /* RegistryStore.swift */,
 				F00100010000000000000009 /* ClaudeConfigStore.swift */,
+				F0010001000000000000000A /* ClaudeDesktopService.swift */,
 				F0010001000000000000000C /* WindowManager.swift */,
 			);
 			path = Services;
@@ -280,6 +283,7 @@
 				B00100010000000000000007 /* BackupService.swift in Sources */,
 				B00100010000000000000008 /* RegistryStore.swift in Sources */,
 				B00100010000000000000009 /* ClaudeConfigStore.swift in Sources */,
+				B0010001000000000000000A /* ClaudeDesktopService.swift in Sources */,
 				B0010001000000000000000C /* WindowManager.swift in Sources */,
 				B0010001000000000000000E /* AppCoordinator.swift in Sources */,
 				B00100010000000000000011 /* MenuBarContentView.swift in Sources */,

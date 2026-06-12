@@ -47,6 +47,14 @@ struct MenuBarContentView: View {
             menuAction("Import from Claude Desktop") {
                 coordinator.importFromClaudeConfig()
             }
+            if coordinator.shouldShowClaudeDesktopRestartAction {
+                Divider()
+                menuAction("Restart Claude Desktop to Apply Changes") {
+                    Task {
+                        await coordinator.restartClaudeDesktopToApplyChanges()
+                    }
+                }
+            }
             Divider()
             menuAction("Manage MCP servers") {
                 WindowManager.shared.showManager(coordinator: coordinator)
