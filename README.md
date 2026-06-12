@@ -1,6 +1,6 @@
 # Claude MCP Switch
 
-![Claude MCP Switch Logo](app/Sources/ClaudeMcpSwitch/Resources/Assets.xcassets/AppIcon.appiconset/claude-mcp-switch-256.png)
+![Claude MCP Switch Logo](app/Sources/ClaudeMcpSwitch/Resources/Assets.xcassets/AppIcon.appiconset/claude-mcp-switch-128.png)
 
 Claude MCP Switch is a native macOS menu bar app for managing Claude Desktop configured MCP Servers.
 
