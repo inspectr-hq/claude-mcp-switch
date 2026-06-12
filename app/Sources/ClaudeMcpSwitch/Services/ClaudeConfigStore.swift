@@ -43,11 +43,7 @@ struct ClaudeConfigStore: ClaudeConfigStoreProtocol {
         let url = configURLProvider()
         try fileManager.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try backupService.createBackupIfNeeded(sourceURL: url, prefix: "claude_desktop_config")
-
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        let data = try encoder.encode(config)
-        try data.write(to: url, options: .atomic)
+        try write(config: config, to: url)
     }
 
     func syncServer(_ server: ManagedServer) throws {
@@ -65,9 +61,12 @@ struct ClaudeConfigStore: ClaudeConfigStoreProtocol {
         let url = configURLProvider()
         try fileManager.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try backupService.createBackupIfNeeded(sourceURL: url, prefix: "claude_desktop_config")
+        try write(config: config, to: url)
+    }
 
+    private func write(config: ClaudeDesktopConfig, to url: URL) throws {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
         let data = try encoder.encode(config)
         try data.write(to: url, options: .atomic)
     }

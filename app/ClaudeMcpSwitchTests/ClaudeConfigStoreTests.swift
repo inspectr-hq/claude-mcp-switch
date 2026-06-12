@@ -93,4 +93,39 @@ struct ClaudeConfigStoreTests {
         #expect(config.mcpServers.keys.sorted() == ["github"])
         #expect(config.mcpServers["github"]?.command == "npx")
     }
+
+    @Test func syncDoesNotEscapeForwardSlashesInWrittenJSON() throws {
+        let tempRoot = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+
+        let claudeURL = tempRoot.appendingPathComponent("claude_desktop_config.json")
+        let backupsURL = tempRoot.appendingPathComponent("backups", isDirectory: true)
+        try "{}".write(to: claudeURL, atomically: true, encoding: .utf8)
+
+        let store = ClaudeConfigStore(
+            configURLProvider: { claudeURL },
+            backupService: BackupService(backupsDirectoryURL: backupsURL)
+        )
+
+        let registry = ServerRegistry(servers: [
+            ManagedServer(
+                name: "TrendMiner CS",
+                enabled: true,
+                config: MCPServerConfig(
+                    command: "npx",
+                    args: [
+                        "mcp-remote@0.1.37",
+                        "https://tm-mcp-cs.in-spectr.dev/mcp"
+                    ]
+                )
+            )
+        ])
+
+        try store.syncEnabledServers(from: registry)
+
+        let writtenJSON = try String(contentsOf: claudeURL, encoding: .utf8)
+        #expect(writtenJSON.contains("https://tm-mcp-cs.in-spectr.dev/mcp"))
+        #expect(!writtenJSON.contains("https:\\/\\/tm-mcp-cs.in-spectr.dev\\/mcp"))
+    }
 }
