@@ -115,7 +115,7 @@ Approving sync replaces Claude Desktop `mcpServers` with the enabled set from Cl
 
 ### Requirements
 
-- macOS
+- macOS 14.0 or newer
 - Xcode 16 or newer
 - Swift 5.10+ toolchain
 
