@@ -25,4 +25,16 @@ struct AppSettingsTests {
 
         #expect(decoded == settings)
     }
+
+    @Test func missingDirectToggleSyncPreferenceDefaultsToEnabled() throws {
+        let data = """
+        {
+          "claudeConfigPathOverride": "/tmp/custom-claude.json"
+        }
+        """.data(using: .utf8)!
+
+        let decoded = try JSONDecoder().decode(AppSettings.self, from: data)
+
+        #expect(decoded.directToggleSyncToClaudeConfig == true)
+    }
 }

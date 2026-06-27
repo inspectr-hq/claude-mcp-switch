@@ -128,4 +128,48 @@ struct ClaudeConfigStoreTests {
         #expect(writtenJSON.contains("https://tm-mcp-cs.in-spectr.dev/mcp"))
         #expect(!writtenJSON.contains("https:\\/\\/tm-mcp-cs.in-spectr.dev\\/mcp"))
     }
+
+    @Test func syncWritesMCPServersBeforeOtherTopLevelKeys() throws {
+        let tempRoot = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+
+        let claudeURL = tempRoot.appendingPathComponent("claude_desktop_config.json")
+        let backupsURL = tempRoot.appendingPathComponent("backups", isDirectory: true)
+        let original = """
+        {
+          "theme": "dark",
+          "autoUpdates": false,
+          "mcpServers": {
+            "legacy": {
+              "command": "node",
+              "args": ["legacy.js"]
+            }
+          }
+        }
+        """
+        try original.write(to: claudeURL, atomically: true, encoding: .utf8)
+
+        let store = ClaudeConfigStore(
+            configURLProvider: { claudeURL },
+            backupService: BackupService(backupsDirectoryURL: backupsURL)
+        )
+
+        let registry = ServerRegistry(servers: [
+            ManagedServer(
+                name: "github",
+                enabled: true,
+                config: MCPServerConfig(command: "npx")
+            )
+        ])
+
+        try store.syncEnabledServers(from: registry)
+
+        let writtenJSON = try String(contentsOf: claudeURL, encoding: .utf8)
+        let mcpRange = writtenJSON.range(of: "\"mcpServers\"")
+        let themeRange = writtenJSON.range(of: "\"theme\"")
+        #expect(mcpRange != nil)
+        #expect(themeRange != nil)
+        #expect(mcpRange!.lowerBound < themeRange!.lowerBound)
+    }
 }

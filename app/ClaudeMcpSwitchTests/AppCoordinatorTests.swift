@@ -97,6 +97,68 @@ struct AppCoordinatorTests {
         #expect(persisted.servers.first(where: { $0.name == "BatchWorks ERP" })?.enabled == true)
     }
 
+    @Test func importableClaudeServerCountIgnoresAlreadyImportedServers() throws {
+        let harness = try CoordinatorTestHarness()
+        try harness.writeClaudeConfig(
+            """
+            {
+              "mcpServers": {
+                "Existing": {
+                  "command": "node",
+                  "args": ["existing.js"]
+                },
+                "New One": {
+                  "command": "npx",
+                  "args": ["-y", "@modelcontextprotocol/server-github"]
+                }
+              }
+            }
+            """
+        )
+
+        harness.coordinator.registry = ServerRegistry(servers: [
+            ManagedServer(name: "Existing", enabled: true, config: MCPServerConfig(command: "node", args: ["existing.js"]))
+        ])
+
+        harness.coordinator.refreshClaudeConfigChangeCounts()
+
+        #expect(harness.coordinator.importableClaudeServerCount == 1)
+    }
+
+    @Test func syncableClaudeServerChangeCountIgnoresRemovals() throws {
+        let harness = try CoordinatorTestHarness()
+        try harness.writeClaudeConfig(
+            """
+            {
+              "mcpServers": {
+                "Existing": {
+                  "command": "node",
+                  "args": ["existing.js"]
+                },
+                "Changed": {
+                  "command": "python",
+                  "args": ["old.py"]
+                },
+                "Obsolete": {
+                  "command": "uv",
+                  "args": ["legacy.py"]
+                }
+              }
+            }
+            """
+        )
+
+        harness.coordinator.registry = ServerRegistry(servers: [
+            ManagedServer(name: "Existing", enabled: true, config: MCPServerConfig(command: "node", args: ["existing.js"])),
+            ManagedServer(name: "Changed", enabled: true, config: MCPServerConfig(command: "python", args: ["new.py"])),
+            ManagedServer(name: "New", enabled: true, config: MCPServerConfig(command: "npx"))
+        ])
+
+        harness.coordinator.refreshClaudeConfigChangeCounts()
+
+        #expect(harness.coordinator.syncableClaudeServerChangeCount == 2)
+    }
+
     @Test func confirmSyncWritesEnabledServersToClaudeConfig() throws {
         let harness = try CoordinatorTestHarness()
         try harness.writeClaudeConfig(
