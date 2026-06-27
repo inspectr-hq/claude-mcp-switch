@@ -53,22 +53,30 @@ struct ServerListView: View {
             Button {
                 coordinator.importFromClaudeConfig()
             } label: {
-                BadgeButtonLabel(
-                    title: "Import from Claude Desktop",
-                    badgeCount: coordinator.importableClaudeServerCount
-                )
+                Text("Import from Claude Desktop")
+                    .padding(.trailing, coordinator.importableClaudeServerCount > 0 ? 10 : 0)
             }
             .buttonStyle(.bordered)
+            .overlay(alignment: .topTrailing) {
+                CountBadgeLabel(count: coordinator.importableClaudeServerCount)
+                    .offset(x: 7, y: -7)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+            }
             Button {
                 coordinator.requestSyncToClaudeConfig()
                 WindowManager.shared.showSyncApproval(coordinator: coordinator)
             } label: {
-                BadgeButtonLabel(
-                    title: "Sync to Claude Desktop",
-                    badgeCount: coordinator.syncableClaudeServerChangeCount
-                )
+                Text("Sync to Claude Desktop")
+                    .padding(.trailing, coordinator.syncableClaudeServerChangeCount > 0 ? 10 : 0)
             }
             .buttonStyle(.borderedProminent)
+            .overlay(alignment: .topTrailing) {
+                CountBadgeLabel(count: coordinator.syncableClaudeServerChangeCount)
+                    .offset(x: 7, y: -7)
+                    .accessibilityHidden(true)
+                    .allowsHitTesting(false)
+            }
         }
     }
 

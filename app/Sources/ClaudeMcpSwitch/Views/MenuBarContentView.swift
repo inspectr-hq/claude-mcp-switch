@@ -82,7 +82,12 @@ struct MenuBarContentView: View {
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            BadgeButtonLabel(title: title, badgeCount: badgeCount)
+            HStack(spacing: 8) {
+                Text(title)
+                CountBadgeLabel(count: badgeCount)
+                Spacer()
+            }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .leading)

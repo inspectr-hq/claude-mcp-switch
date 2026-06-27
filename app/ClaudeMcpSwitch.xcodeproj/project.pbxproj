@@ -23,7 +23,6 @@
 		B00100010000000000000012 /* ServerListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000012 /* ServerListView.swift */; };
 		B00100010000000000000013 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000013 /* SettingsView.swift */; };
 		B00100010000000000000014 /* CountBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000014 /* CountBadgeLabel.swift */; };
-		B00100010000000000000015 /* BadgeButtonLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000015 /* BadgeButtonLabel.swift */; };
 		B00100010000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000017 /* Assets.xcassets */; };
 		B00100010000000000000018 /* ClaudeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000018 /* ClaudeLogo.png */; };
 /* End PBXBuildFile section */
@@ -57,7 +56,6 @@
 		F00100010000000000000012 /* ServerListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerListView.swift; sourceTree = "<group>"; };
 		F00100010000000000000013 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F00100010000000000000014 /* CountBadgeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountBadgeLabel.swift; sourceTree = "<group>"; };
-		F00100010000000000000015 /* BadgeButtonLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeButtonLabel.swift; sourceTree = "<group>"; };
 		F00100010000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F00100010000000000000018 /* ClaudeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ClaudeLogo.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -151,7 +149,6 @@
 			isa = PBXGroup;
 			children = (
 				F00100010000000000000011 /* MenuBarContentView.swift */,
-				F00100010000000000000015 /* BadgeButtonLabel.swift */,
 				F00100010000000000000014 /* CountBadgeLabel.swift */,
 				F00100010000000000000012 /* ServerListView.swift */,
 				F00100010000000000000013 /* SettingsView.swift */,
@@ -293,7 +290,6 @@
 				B0010001000000000000000C /* WindowManager.swift in Sources */,
 				B0010001000000000000000E /* AppCoordinator.swift in Sources */,
 				B00100010000000000000011 /* MenuBarContentView.swift in Sources */,
-				B00100010000000000000015 /* BadgeButtonLabel.swift in Sources */,
 				B00100010000000000000014 /* CountBadgeLabel.swift in Sources */,
 				B00100010000000000000012 /* ServerListView.swift in Sources */,
 				B00100010000000000000013 /* SettingsView.swift in Sources */,
