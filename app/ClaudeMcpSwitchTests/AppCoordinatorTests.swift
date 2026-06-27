@@ -120,6 +120,8 @@ struct AppCoordinatorTests {
             ManagedServer(name: "Existing", enabled: true, config: MCPServerConfig(command: "node", args: ["existing.js"]))
         ])
 
+        harness.coordinator.refreshClaudeConfigChangeCounts()
+
         #expect(harness.coordinator.importableClaudeServerCount == 1)
     }
 
