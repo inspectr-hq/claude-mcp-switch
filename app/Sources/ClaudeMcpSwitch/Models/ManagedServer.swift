@@ -23,6 +23,16 @@ struct MCPServerConfig: Codable, Equatable {
         args = try container.decodeIfPresent([String].self, forKey: .args) ?? []
         env = try container.decodeIfPresent([String: String].self, forKey: .env) ?? [:]
     }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(command, forKey: .command)
+        try container.encode(args, forKey: .args)
+
+        if !env.isEmpty {
+            try container.encode(env, forKey: .env)
+        }
+    }
 }
 
 struct ManagedServer: Identifiable, Codable, Equatable {

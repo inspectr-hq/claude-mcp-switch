@@ -66,7 +66,7 @@ struct ClaudeConfigStore: ClaudeConfigStoreProtocol {
 
     private func write(config: ClaudeDesktopConfig, to url: URL) throws {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
         let data = try encoder.encode(config)
         try data.write(to: url, options: .atomic)
     }
