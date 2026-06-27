@@ -10,6 +10,8 @@ final class AppCoordinator: ObservableObject {
     @Published var syncRemovalWarning: SyncRemovalWarning?
     @Published var isClaudeDesktopRunning: Bool
     @Published var needsClaudeDesktopRestart: Bool = false
+    @Published var importableClaudeServerCount: Int = 0
+    @Published var syncableClaudeServerChangeCount: Int = 0
 
     let registryStore: RegistryStore
 
@@ -38,6 +40,7 @@ final class AppCoordinator: ObservableObject {
         resolvedClaudeDesktopService.setRunningStateDidChangeHandler { [weak self] isRunning in
             self?.handleClaudeDesktopRunningStateChange(isRunning)
         }
+        refreshClaudeConfigChangeCounts()
     }
 
     var effectiveClaudeConfigPath: String {
@@ -67,6 +70,7 @@ final class AppCoordinator: ObservableObject {
     func saveRegistry() {
         do {
             try registryStore.saveRegistry(registry)
+            refreshClaudeConfigChangeCounts()
             statusMessage = "Saved MCP Servers"
         } catch {
             statusMessage = "Failed to save MCP Servers: \(error.localizedDescription)"
@@ -112,6 +116,7 @@ final class AppCoordinator: ObservableObject {
         do {
             try registryStore.saveRegistry(registry)
             try configStore.syncEnabledServers(from: registry)
+            refreshClaudeConfigChangeCounts()
             syncPreview = nil
             syncRemovalWarning = nil
             markClaudeDesktopNeedsRestartIfRunning(
@@ -147,6 +152,7 @@ final class AppCoordinator: ObservableObject {
 
             registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             try registryStore.saveRegistry(registry)
+            refreshClaudeConfigChangeCounts()
             statusMessage = "Imported \(importedServers.count) servers from Claude Desktop"
         } catch {
             statusMessage = "Import failed: \(error.localizedDescription)"
@@ -175,6 +181,7 @@ final class AppCoordinator: ObservableObject {
             } else {
                 statusMessage = "Saved MCP Servers"
             }
+            refreshClaudeConfigChangeCounts()
         } catch {
             statusMessage = "Failed to update MCP Server: \(error.localizedDescription)"
         }
@@ -283,6 +290,46 @@ final class AppCoordinator: ObservableObject {
             needsClaudeDesktopRestart = false
         }
     }
+
+    func refreshClaudeConfigChangeCounts() {
+        guard let summary = loadClaudeConfigChangeSummary() else {
+            importableClaudeServerCount = 0
+            syncableClaudeServerChangeCount = 0
+            return
+        }
+
+        importableClaudeServerCount = summary.importableServerCount
+        syncableClaudeServerChangeCount = summary.syncableServerChangeCount
+    }
+
+    private func loadClaudeConfigChangeSummary() -> ClaudeConfigChangeSummary? {
+        guard let currentConfig = try? configStore.loadConfig() else {
+            return nil
+        }
+
+        let localServerNames = Set(registry.servers.map(\.name))
+        let enabledServers = registry.servers
+            .filter(\.enabled)
+            .reduce(into: [String: MCPServerConfig]()) { result, server in
+                result[server.name] = server.config
+            }
+
+        let preview = SyncPreview(
+            configPath: effectiveClaudeConfigPath,
+            currentServers: currentConfig.mcpServers,
+            desiredServers: enabledServers
+        )
+
+        return ClaudeConfigChangeSummary(
+            importableServerCount: currentConfig.mcpServers.keys.filter { !localServerNames.contains($0) }.count,
+            syncableServerChangeCount: preview.additions.count + preview.updates.count
+        )
+    }
+}
+
+private struct ClaudeConfigChangeSummary {
+    let importableServerCount: Int
+    let syncableServerChangeCount: Int
 }
 
 struct SyncPreview: Identifiable {

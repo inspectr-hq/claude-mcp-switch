@@ -8,6 +8,9 @@ struct ServerListView: View {
 
     var body: some View {
         content
+            .onAppear {
+                coordinator.refreshClaudeConfigChangeCounts()
+            }
             .sheet(item: $editingServer) { server in
                 ServerEditorSheet(server: server) { updatedServer in
                     coordinator.updateServer(updatedServer)
@@ -47,12 +50,23 @@ struct ServerListView: View {
 
             Spacer()
 
-            Button("Import from Claude Desktop") {
+            Button {
                 coordinator.importFromClaudeConfig()
+            } label: {
+                BadgeButtonLabel(
+                    title: "Import from Claude Desktop",
+                    badgeCount: coordinator.importableClaudeServerCount
+                )
             }
-            Button("Sync to Claude Desktop") {
+            .buttonStyle(.bordered)
+            Button {
                 coordinator.requestSyncToClaudeConfig()
                 WindowManager.shared.showSyncApproval(coordinator: coordinator)
+            } label: {
+                BadgeButtonLabel(
+                    title: "Sync to Claude Desktop",
+                    badgeCount: coordinator.syncableClaudeServerChangeCount
+                )
             }
             .buttonStyle(.borderedProminent)
         }

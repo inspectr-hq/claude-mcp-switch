@@ -40,11 +40,11 @@ struct MenuBarContentView: View {
 
          
             Divider()
-            menuAction("Sync to Claude Desktop") {
+            menuAction("Sync to Claude Desktop", badgeCount: coordinator.syncableClaudeServerChangeCount) {
                 coordinator.requestSyncToClaudeConfig()
                 WindowManager.shared.showSyncApproval(coordinator: coordinator)
             }
-            menuAction("Import from Claude Desktop") {
+            menuAction("Import from Claude Desktop", badgeCount: coordinator.importableClaudeServerCount) {
                 coordinator.importFromClaudeConfig()
             }
             if coordinator.shouldShowClaudeDesktopRestartAction {
@@ -68,18 +68,21 @@ struct MenuBarContentView: View {
                 NSApp.terminate(nil)
             }
         }
+        .onAppear {
+            coordinator.refreshClaudeConfigChangeCounts()
+        }
         .padding(8)
         .frame(width: 280, alignment: .leading)
     }
 
     @ViewBuilder
-    private func menuAction(_ title: String, action: @escaping () -> Void) -> some View {
+    private func menuAction(
+        _ title: String,
+        badgeCount: Int = 0,
+        action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
-            HStack {
-                Text(title)
-                Spacer()
-            }
-            .contentShape(Rectangle())
+            BadgeButtonLabel(title: title, badgeCount: badgeCount)
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .leading)
