@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct ServerListView: View {
@@ -180,6 +181,7 @@ private struct ServerEditorSheet: View {
     @State private var commandArguments: [EditableArgument]
     @State private var environmentEntries: [EditableEnvironmentEntry]
     @State private var validationMessage: String?
+    @State private var snippetCopyMessage: String?
 
     let onSave: (ManagedServer) -> Void
 
@@ -350,6 +352,51 @@ private struct ServerEditorSheet: View {
                             .frame(minHeight: 100)
                             .padding(.top, 8)
                     }
+
+                    GroupBox {
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Claude Desktop JSON")
+                                        .font(.headline)
+                                    Text("Copy a ready-to-paste server snippet for claude_desktop_config.json.")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+
+                                Spacer()
+
+                                Button("Copy JSON") {
+                                    copyJSONSnippet()
+                                }
+                                .buttonStyle(.bordered)
+                            }
+
+                            ZStack(alignment: .topLeading) {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.secondary.opacity(0.08))
+
+                                ScrollView {
+                                    Text(claudeDesktopJSONSnippet)
+                                        .font(.caption.monospaced())
+                                        .textSelection(.enabled)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(12)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                            }
+                            .frame(minHeight: 120)
+
+                            if let snippetCopyMessage {
+                                Text(snippetCopyMessage)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.top, 8)
+                    } label: {
+                        EmptyView()
+                    }
                 }
                 .padding(20)
             }
@@ -461,6 +508,38 @@ private struct ServerEditorSheet: View {
     private func removeEnvironmentEntry(_ id: UUID) {
         environmentEntries.removeAll { $0.id == id }
     }
+
+    private var claudeDesktopJSONSnippet: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
+
+        let trimmedName = draft.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCommand = draft.config.command.trimmingCharacters(in: .whitespacesAndNewlines)
+        let serverName = trimmedName.isEmpty ? "server-name" : trimmedName
+        let config = MCPServerConfig(
+            command: trimmedCommand.isEmpty ? draft.config.command : trimmedCommand,
+            args: parseArgs(commandArguments),
+            env: (try? parseEnvironment(environmentEntries)) ?? draft.config.env
+        )
+
+        let payload = ClaudeDesktopSnippetPayload(mcpServers: [serverName: config])
+
+        guard
+            let data = try? encoder.encode(payload),
+            let snippet = String(data: data, encoding: .utf8)
+        else {
+            return "{}"
+        }
+
+        return snippet
+    }
+
+    private func copyJSONSnippet() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(claudeDesktopJSONSnippet, forType: .string)
+        snippetCopyMessage = "Copied to clipboard."
+    }
 }
 
 private struct EditableArgument: Identifiable {
@@ -494,6 +573,10 @@ private enum ServerEditorError: LocalizedError {
             return "Environment variable keys cannot be empty."
         }
     }
+}
+
+private struct ClaudeDesktopSnippetPayload: Codable {
+    var mcpServers: [String: MCPServerConfig]
 }
 
 struct SyncConfirmationSheet: View {
