@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B00100010000000000000019 /* AppInstallationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000019 /* AppInstallationInfo.swift */; };
 		B00100010000000000000001 /* ClaudeMcpSwitchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */; };
 		B00100010000000000000002 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000002 /* AppSettings.swift */; };
 		B00100010000000000000003 /* ManagedServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000003 /* ManagedServer.swift */; };
@@ -26,6 +25,7 @@
 		B00100010000000000000014 /* CountBadgeLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000014 /* CountBadgeLabel.swift */; };
 		B00100010000000000000017 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000017 /* Assets.xcassets */; };
 		B00100010000000000000018 /* ClaudeLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000018 /* ClaudeLogo.png */; };
+		B00100010000000000000019 /* AppInstallationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000019 /* AppInstallationInfo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,7 +39,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F00100010000000000000019 /* AppInstallationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallationInfo.swift; sourceTree = "<group>"; };
 		DB302DE52FCC34B800175AFA /* ClaudeMcpSwitchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeMcpSwitchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00100010000000000000000 /* ClaudeMcpSwitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMcpSwitch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeMcpSwitchApp.swift; sourceTree = "<group>"; };
@@ -60,6 +59,7 @@
 		F00100010000000000000014 /* CountBadgeLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountBadgeLabel.swift; sourceTree = "<group>"; };
 		F00100010000000000000017 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F00100010000000000000018 /* ClaudeLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ClaudeLogo.png; sourceTree = "<group>"; };
+		F00100010000000000000019 /* AppInstallationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallationInfo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */

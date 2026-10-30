@@ -29,13 +29,36 @@ final class AppCoordinator: ObservableObject {
         self.settingsDefaults = settingsDefaults
         let resolvedClaudeDesktopService = claudeDesktopService ?? ClaudeDesktopService()
         self.claudeDesktopService = resolvedClaudeDesktopService
+        var registryURL = paths.registryURL
+        var backupsDirectoryURL = paths.backupsDirectoryURL
+        var migrationStatus: String?
+        do {
+            if try paths.migrateLegacyStorageIfNeeded() != nil {
+                migrationStatus = "Migrated previous MCP Servers and backups"
+            }
+        } catch {
+            // Use the pending original registry until activation consumes it.
+            // After activation, keep all edits at the new location on retries.
+            let previousDirectory = paths.legacyStorageDirectoryForRecovery()
+            if let previousDirectory {
+                registryURL = previousDirectory.appendingPathComponent("servers.json")
+                backupsDirectoryURL = previousDirectory.appendingPathComponent("backups")
+            }
+            let location = previousDirectory != nil ? "previous" : "current"
+            migrationStatus = "Storage migration failed; using \(location) location: \(error.localizedDescription)"
+        }
         self.registryStore = RegistryStore(
-            registryURL: paths.registryURL,
-            backupsDirectoryURL: paths.backupsDirectoryURL
+            registryURL: registryURL,
+            backupsDirectoryURL: backupsDirectoryURL,
+            fileManager: paths.fileManager
         )
-        self.configBackupService = BackupService(backupsDirectoryURL: paths.backupsDirectoryURL)
+        self.configBackupService = BackupService(
+            backupsDirectoryURL: backupsDirectoryURL,
+            fileManager: paths.fileManager
+        )
         self.settings = Self.loadSettings(from: settingsDefaults)
         self.registry = (try? registryStore.loadRegistry()) ?? ServerRegistry()
+        self.statusMessage = migrationStatus
         self.isClaudeDesktopRunning = resolvedClaudeDesktopService.isRunning
         resolvedClaudeDesktopService.setRunningStateDidChangeHandler { [weak self] isRunning in
             self?.handleClaudeDesktopRunningStateChange(isRunning)
