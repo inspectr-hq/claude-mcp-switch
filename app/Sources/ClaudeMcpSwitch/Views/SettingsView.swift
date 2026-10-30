@@ -7,24 +7,6 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("About") {
-                LabeledContent("Version", value: appInfo.versionDescription)
-
-                LabeledContent("GitHub") {
-                    Link("inspectr-hq/claude-mcp-switch", destination: AppInstallationInfo.repositoryURL)
-                }
-
-                LabeledContent("Installation", value: appInfo.installationDescription)
-
-                LabeledContent("Location") {
-                    Text(appInfo.appURL.path)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .textSelection(.enabled)
-                        .multilineTextAlignment(.trailing)
-                }
-            }
-
             Section("Claude Desktop Config") {
                 Toggle("Use custom config path", isOn: $customPathEnabled)
 
@@ -75,6 +57,24 @@ struct SettingsView: View {
             Section("Status") {
                 Text(coordinator.statusMessage ?? "No recent operation")
                     .foregroundStyle(.secondary)
+            }
+
+            Section("About") {
+                LabeledContent("Version", value: appInfo.versionDescription)
+
+                LabeledContent("GitHub") {
+                    Link("inspectr-hq/claude-mcp-switch", destination: AppInstallationInfo.repositoryURL)
+                }
+
+                LabeledContent("Installation", value: appInfo.installationDescription)
+
+                LabeledContent("Location") {
+                    Text(appInfo.appURL.path)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                        .multilineTextAlignment(.trailing)
+                }
             }
         }
         .formStyle(.grouped)
