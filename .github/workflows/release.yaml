@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set version from tag
         id: release_meta
@@ -86,7 +86,7 @@ jobs:
           echo "DMG_PATH=app/dist/ClaudeMcpSwitch-${VERSION}.dmg" >> "$GITHUB_ENV"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ env.ZIP_PATH }}
@@ -123,7 +123,7 @@ jobs:
           echo "DMG_SHA256=$SHA" >> "$GITHUB_ENV"
 
       - name: Checkout Homebrew tap repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: inspectr-hq/homebrew-inspectr
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
