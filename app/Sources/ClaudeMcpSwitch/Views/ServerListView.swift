@@ -44,7 +44,7 @@ struct ServerListView: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("MCP Servers")
                     .font(.title2)
-                Text("Your MCP Servers are stored locally and synced into Claude Desktop on demand.")
+                Text("Your MCP Servers are stored locally and synced into Claude Desktop")
                     .foregroundStyle(.secondary)
             }
 
@@ -81,26 +81,61 @@ struct ServerListView: View {
     }
 
     private var serverList: some View {
-        List {
-            ForEach(coordinator.registry.servers) { server in
-                ServerManagerRow(
-                    server: server,
-                    onToggle: { coordinator.setEnabled($0, for: server.id) },
-                    onEdit: { editingServer = server },
-                    onDuplicate: {
-                        if let duplicate = coordinator.duplicateServer(server.id) {
-                            editingServer = duplicate
-                        }
-                    },
-                    onDelete: { deletingServer = server }
-                )
+        VStack(spacing: 0) {
+            serverListHeader
+            Divider()
+
+            List {
+                ForEach(coordinator.registry.servers) { server in
+                    ServerManagerRow(
+                        server: server,
+                        onToggle: { coordinator.setEnabled($0, for: server.id) },
+                        onEdit: { editingServer = server },
+                        onDuplicate: {
+                            if let duplicate = coordinator.duplicateServer(server.id) {
+                                editingServer = duplicate
+                            }
+                        },
+                        onDelete: { deletingServer = server }
+                    )
+                    .listRowInsets(EdgeInsets(
+                        top: 0,
+                        leading: ServerManagerColumns.horizontalInset,
+                        bottom: 0,
+                        trailing: ServerManagerColumns.horizontalInset
+                    ))
+                }
+                .onMove(perform: coordinator.moveServers)
+            }
+            .listStyle(.plain)
+            .contentMargins(.horizontal, 0, for: .scrollContent)
+            .overlay {
+                if coordinator.registry.servers.isEmpty {
+                    emptyState
+                }
             }
         }
-        .overlay {
-            if coordinator.registry.servers.isEmpty {
-                emptyState
-            }
+    }
+
+    private var serverListHeader: some View {
+        HStack(spacing: ServerManagerColumns.spacing) {
+            Color.clear
+                .frame(width: ServerManagerColumns.grip, height: 1)
+                .accessibilityHidden(true)
+            Text("Active")
+                .frame(width: ServerManagerColumns.active)
+            Text("Server")
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Text("Updated")
+                .frame(width: ServerManagerColumns.updated, alignment: .leading)
+            Text("Actions")
+                .frame(width: ServerManagerColumns.actions, alignment: .leading)
         }
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, ServerManagerColumns.horizontalInset)
+        .padding(.vertical, 8)
+        .accessibilityAddTraits(.isHeader)
     }
 
     private var emptyState: some View {
@@ -151,6 +186,15 @@ struct ServerListView: View {
     }
 }
 
+private enum ServerManagerColumns {
+    static let spacing: CGFloat = 12
+    static let horizontalInset: CGFloat = 12
+    static let grip: CGFloat = 20
+    static let active: CGFloat = 52
+    static let updated: CGFloat = 100
+    static let actions: CGFloat = 220
+}
+
 private struct ServerManagerRow: View {
     let server: ManagedServer
     let onToggle: (Bool) -> Void
@@ -159,7 +203,14 @@ private struct ServerManagerRow: View {
     let onDelete: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: ServerManagerColumns.spacing) {
+            Image(systemName: "line.3.horizontal")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.tertiary)
+                .frame(width: ServerManagerColumns.grip)
+                .help("Drag to reorder servers")
+                .accessibilityHidden(true)
+
             Toggle(
                 "",
                 isOn: Binding(
@@ -170,6 +221,7 @@ private struct ServerManagerRow: View {
             .labelsHidden()
             .toggleStyle(.switch)
             .controlSize(.small)
+            .frame(width: ServerManagerColumns.active)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(server.name)
@@ -178,12 +230,13 @@ private struct ServerManagerRow: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-
-            Spacer()
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(server.updatedAt, style: .date)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .frame(width: ServerManagerColumns.updated, alignment: .leading)
 
             HStack(spacing: 8) {
                 Button("Edit", action: onEdit)
@@ -191,6 +244,7 @@ private struct ServerManagerRow: View {
                 Button("Delete", action: onDelete)
                     .foregroundStyle(.red)
             }
+            .frame(width: ServerManagerColumns.actions, alignment: .leading)
         }
         .padding(.vertical, 4)
     }

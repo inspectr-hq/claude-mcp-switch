@@ -20,6 +20,7 @@ Prefer using terminal? Use the CLI tool: [jandroav/claude-mcp-switch](https://gi
 - Import `mcpServers` from Claude Desktop config
 - Local file-backed storage for saved MCP Servers
 - Enable or disable servers from the menu bar or manager window
+- Drag rows in the manager to set a saved order shared with the menu bar
 - Edit server name, command, arguments, environment variables, and notes
 - Sync enabled servers back into Claude Desktop
 - Sync review flow with diff preview for additions and updates
@@ -98,6 +99,8 @@ If Finder still blocks the app, use:
 3. Choose `Import from Claude Desktop`.
 4. Review and enable the MCP Servers you want to manage.
 5. Use `Sync to Claude Desktop` when you want Claude Desktop `mcpServers` to match the enabled set.
+
+Open `Manage MCP servers` and drag rows using the grip on the left to arrange the list. The menu bar follows the same order, which is saved across launches. Editing and importing preserve your order; new imports appear at the end alphabetically, and duplicates appear beside their source.
 
 ## Sync Behavior
 

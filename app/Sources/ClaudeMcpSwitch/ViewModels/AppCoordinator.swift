@@ -139,6 +139,7 @@ final class AppCoordinator: ObservableObject {
             let importedServers = config.mcpServers.map { name, value in
                 ManagedServer(name: name, enabled: true, config: value)
             }
+            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
 
             for server in importedServers {
                 if let index = registry.servers.firstIndex(where: { $0.name == server.name }) {
@@ -150,7 +151,6 @@ final class AppCoordinator: ObservableObject {
                 }
             }
 
-            registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
             try registryStore.saveRegistry(registry)
             refreshClaudeConfigChangeCounts()
             statusMessage = "Imported \(importedServers.count) servers from Claude Desktop"
@@ -205,6 +205,11 @@ final class AppCoordinator: ObservableObject {
         needsClaudeDesktopRestart && isClaudeDesktopRunning
     }
 
+    func moveServers(fromOffsets source: IndexSet, toOffset destination: Int) {
+        registry.servers.move(fromOffsets: source, toOffset: destination)
+        saveRegistry()
+    }
+
     func updateServer(_ server: ManagedServer) {
         guard let index = registry.servers.firstIndex(where: { $0.id == server.id }) else {
             return
@@ -213,14 +218,14 @@ final class AppCoordinator: ObservableObject {
         var updatedServer = server
         updatedServer.updatedAt = Date()
         registry.servers[index] = updatedServer
-        registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         saveRegistry()
     }
 
     func duplicateServer(_ serverID: UUID) -> ManagedServer? {
-        guard let sourceServer = registry.servers.first(where: { $0.id == serverID }) else {
+        guard let sourceIndex = registry.servers.firstIndex(where: { $0.id == serverID }) else {
             return nil
         }
+        let sourceServer = registry.servers[sourceIndex]
 
         let duplicate = ManagedServer(
             name: uniqueDuplicateName(for: sourceServer.name),
@@ -229,8 +234,7 @@ final class AppCoordinator: ObservableObject {
             notes: sourceServer.notes
         )
 
-        registry.servers.append(duplicate)
-        registry.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        registry.servers.insert(duplicate, at: sourceIndex + 1)
         saveRegistry()
         statusMessage = "Duplicated MCP Server"
         return duplicate

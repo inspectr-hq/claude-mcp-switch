@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B00100010000000000000019 /* AppInstallationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000019 /* AppInstallationInfo.swift */; };
 		B00100010000000000000001 /* ClaudeMcpSwitchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */; };
 		B00100010000000000000002 /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000002 /* AppSettings.swift */; };
 		B00100010000000000000003 /* ManagedServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00100010000000000000003 /* ManagedServer.swift */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F00100010000000000000019 /* AppInstallationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInstallationInfo.swift; sourceTree = "<group>"; };
 		DB302DE52FCC34B800175AFA /* ClaudeMcpSwitchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeMcpSwitchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00100010000000000000000 /* ClaudeMcpSwitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeMcpSwitch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F00100010000000000000001 /* ClaudeMcpSwitchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeMcpSwitchApp.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 		G00100010000000000000004 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				F00100010000000000000019 /* AppInstallationInfo.swift */,
 				F00100010000000000000002 /* AppSettings.swift */,
 				F00100010000000000000003 /* ManagedServer.swift */,
 				F00100010000000000000004 /* ServerRegistry.swift */,
@@ -293,6 +296,7 @@
 				B00100010000000000000014 /* CountBadgeLabel.swift in Sources */,
 				B00100010000000000000012 /* ServerListView.swift in Sources */,
 				B00100010000000000000013 /* SettingsView.swift in Sources */,
+				B00100010000000000000019 /* AppInstallationInfo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

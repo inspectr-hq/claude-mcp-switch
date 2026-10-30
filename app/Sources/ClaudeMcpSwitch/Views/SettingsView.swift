@@ -3,9 +3,28 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var coordinator: AppCoordinator
     @State private var customPathEnabled = false
+    private let appInfo = AppInstallationInfo()
 
     var body: some View {
         Form {
+            Section("About") {
+                LabeledContent("Version", value: appInfo.versionDescription)
+
+                LabeledContent("GitHub") {
+                    Link("inspectr-hq/claude-mcp-switch", destination: AppInstallationInfo.repositoryURL)
+                }
+
+                LabeledContent("Installation", value: appInfo.installationDescription)
+
+                LabeledContent("Location") {
+                    Text(appInfo.appURL.path)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                        .multilineTextAlignment(.trailing)
+                }
+            }
+
             Section("Claude Desktop Config") {
                 Toggle("Use custom config path", isOn: $customPathEnabled)
 
