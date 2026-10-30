@@ -22,10 +22,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set version from tag
+      - name: Validate release tag and set version
         id: release_meta
         run: |
+          set -euo pipefail
           TAG="${GITHUB_REF_NAME}"
+          if [[ ! "$TAG" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Invalid release tag '$TAG'. Use vMAJOR.MINOR.PATCH, for example v1.1.1."
+            exit 1
+          fi
           VERSION="${TAG#v}"
           echo "TAG=$TAG" >> "$GITHUB_ENV"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
