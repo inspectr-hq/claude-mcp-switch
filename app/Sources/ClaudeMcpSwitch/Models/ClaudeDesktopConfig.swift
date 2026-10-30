@@ -60,17 +60,7 @@ struct ClaudeDesktopConfig: Codable, Equatable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        var orderedValues: [String: JSONValue] = [:]
-
-        if let mcpServers = values["mcpServers"] {
-            orderedValues["mcpServers"] = mcpServers
-        }
-
-        for key in values.keys.filter({ $0 != "mcpServers" }).sorted() {
-            orderedValues[key] = values[key]
-        }
-
-        try container.encode(orderedValues)
+        try container.encode(values)
     }
 
     var mcpServers: [String: MCPServerConfig] {

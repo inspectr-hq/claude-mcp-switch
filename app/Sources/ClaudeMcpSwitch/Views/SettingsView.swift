@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var coordinator: AppCoordinator
     @State private var customPathEnabled = false
+    private let appInfo = AppInstallationInfo()
 
     var body: some View {
         Form {
@@ -56,6 +57,24 @@ struct SettingsView: View {
             Section("Status") {
                 Text(coordinator.statusMessage ?? "No recent operation")
                     .foregroundStyle(.secondary)
+            }
+
+            Section("About") {
+                LabeledContent("Version", value: appInfo.versionDescription)
+
+                LabeledContent("GitHub") {
+                    Link("inspectr-hq/claude-mcp-switch", destination: AppInstallationInfo.repositoryURL)
+                }
+
+                LabeledContent("Installation", value: appInfo.installationDescription)
+
+                LabeledContent("Location") {
+                    Text(appInfo.appURL.path)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                        .multilineTextAlignment(.trailing)
+                }
             }
         }
         .formStyle(.grouped)

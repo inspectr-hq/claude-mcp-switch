@@ -4,6 +4,98 @@ import Testing
 
 @MainActor
 struct AppCoordinatorTests {
+    @Test(arguments: [
+        ([2], 0, [2, 0, 1]),
+        ([0], 3, [1, 2, 0]),
+        ([0], 2, [1, 0, 2]),
+        ([1], 0, [1, 0, 2]),
+        ([0, 2], 3, [1, 0, 2])
+    ])
+    func movingServersPersistsOrderAcrossReload(
+        sourceIndices: [Int], destination: Int, expectedIndices: [Int]
+    ) throws {
+        let harness = try CoordinatorTestHarness(isClaudeDesktopRunning: true)
+        let servers = ["Alpha", "Bravo", "Charlie"].enumerated().map { index, name in
+            ManagedServer(name: name, enabled: index != 1, config: MCPServerConfig(command: "npx"))
+        }
+        harness.coordinator.registry.servers = servers
+        try harness.writeClaudeConfig("{\"mcpServers\": {\"Alpha\": {\"command\": \"npx\"}}}")
+        let originalConfig = try Data(contentsOf: harness.claudeConfigURL)
+
+        harness.coordinator.moveServers(fromOffsets: IndexSet(sourceIndices), toOffset: destination)
+
+        let expectedIDs = expectedIndices.map { servers[$0].id }
+        #expect(harness.coordinator.registry.servers.map(\.id) == expectedIDs)
+        #expect(harness.coordinator.registry.servers == expectedIndices.map { servers[$0] })
+        let persisted = try harness.loadRegistry()
+        #expect(persisted.servers.map(\.id) == expectedIDs)
+        let reloaded = AppCoordinator(
+            paths: FilePaths(fileManager: TestFileManager(appSupportURL: harness.appSupportURL), homeDirectoryURL: harness.rootURL),
+            settingsDefaults: UserDefaults(suiteName: "ManualOrderReload.\(UUID().uuidString)")!,
+            claudeDesktopService: TestClaudeDesktopService(isRunning: false)
+        )
+        #expect(reloaded.registry.servers.map(\.id) == expectedIDs)
+        #expect(try Data(contentsOf: harness.claudeConfigURL) == originalConfig)
+        #expect(harness.coordinator.needsClaudeDesktopRestart == false)
+    }
+
+    @Test func editingServerPreservesManualOrder() throws {
+        let harness = try CoordinatorTestHarness()
+        let servers = ["Zulu", "Alpha", "Middle"].map {
+            ManagedServer(name: $0, config: MCPServerConfig(command: "npx"))
+        }
+        harness.coordinator.registry.servers = servers
+        var edited = servers[1]
+        edited.name = "Renamed"
+
+        harness.coordinator.updateServer(edited)
+
+        #expect(harness.coordinator.registry.servers.map(\.id) == servers.map(\.id))
+        let persisted = try harness.loadRegistry()
+        #expect(persisted.servers.map(\.name) == ["Zulu", "Renamed", "Middle"])
+    }
+
+    @Test func duplicateServerInsertsCopyAfterSourceWithoutReorderingOthers() throws {
+        let harness = try CoordinatorTestHarness()
+        let servers = ["Zulu", "Alpha", "Middle"].map {
+            ManagedServer(name: $0, config: MCPServerConfig(command: "npx"))
+        }
+        harness.coordinator.registry.servers = servers
+
+        let duplicate = try #require(harness.coordinator.duplicateServer(servers[1].id))
+
+        let expectedIDs = [servers[0].id, servers[1].id, duplicate.id, servers[2].id]
+        #expect(harness.coordinator.registry.servers.map(\.id) == expectedIDs)
+        let persisted = try harness.loadRegistry()
+        #expect(persisted.servers.map(\.id) == expectedIDs)
+    }
+
+    @Test func importingPreservesManualOrderAndAppendsNewServersAlphabetically() throws {
+        let harness = try CoordinatorTestHarness()
+        let servers = ["Zulu", "Alpha"].map {
+            ManagedServer(name: $0, enabled: false, config: MCPServerConfig(command: "npx"))
+        }
+        harness.coordinator.registry.servers = servers
+        try harness.writeClaudeConfig(
+            """
+            {"mcpServers": {
+              "Charlie": {"command": "node"},
+              "Zulu": {"command": "uv"},
+              "Bravo": {"command": "python"}
+            }}
+            """
+        )
+
+        harness.coordinator.importFromClaudeConfig()
+
+        let persisted = try harness.loadRegistry()
+        #expect(persisted.servers.map(\.name) == ["Zulu", "Alpha", "Bravo", "Charlie"])
+        #expect(Array(persisted.servers.prefix(2).map(\.id)) == servers.map(\.id))
+        #expect(persisted.servers.first?.config.command == "uv")
+        #expect(persisted.servers.first?.enabled == true)
+        #expect(persisted.servers[1].enabled == false)
+    }
+
     @Test func updateServerPersistsEditedServer() throws {
         let harness = try CoordinatorTestHarness()
         let original = ManagedServer(
