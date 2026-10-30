@@ -129,10 +129,12 @@ struct ClaudeConfigStoreTests {
         #expect(!writtenJSON.contains("https:\\/\\/tm-mcp-cs.in-spectr.dev\\/mcp"))
     }
 
-    @Test func syncWritesMCPServersBeforeOtherTopLevelKeys() throws {
+    @Test(arguments: [false, true])
+    func syncWritesMCPServersBeforeOtherTopLevelKeys(directToggle: Bool) throws {
         let tempRoot = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempRoot) }
 
         let claudeURL = tempRoot.appendingPathComponent("claude_desktop_config.json")
         let backupsURL = tempRoot.appendingPathComponent("backups", isDirectory: true)
@@ -163,13 +165,64 @@ struct ClaudeConfigStoreTests {
             )
         ])
 
-        try store.syncEnabledServers(from: registry)
+        if directToggle {
+            try store.syncServer(registry.servers[0])
+        } else {
+            try store.syncEnabledServers(from: registry)
+        }
 
         let writtenJSON = try String(contentsOf: claudeURL, encoding: .utf8)
+        let objectContents = writtenJSON.drop(while: { $0.isWhitespace || $0 == "{" })
+        #expect(objectContents.hasPrefix("\"mcpServers\""))
         let mcpRange = writtenJSON.range(of: "\"mcpServers\"")
         let themeRange = writtenJSON.range(of: "\"theme\"")
         #expect(mcpRange != nil)
         #expect(themeRange != nil)
         #expect(mcpRange!.lowerBound < themeRange!.lowerBound)
+    }
+
+    @Test(arguments: [false, true])
+    func repeatedSyncWritesIdenticalJSONAndPreservesValues(directToggle: Bool) throws {
+        let tempRoot = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempRoot) }
+        let claudeURL = tempRoot.appendingPathComponent("claude_desktop_config.json")
+        let original = #"""
+        {
+          "theme": "dark",
+          "autoUpdates": false,
+          "quoted\"key\\with\nnewline": {
+            "z": [null, true, 12.5, "line 1\nline 2", "Unicode: café"],
+            "a": {"z": "https://example.com/mcp", "a": "first"}
+          },
+          "mcpServers": {}
+        }
+        """#
+        try original.write(to: claudeURL, atomically: true, encoding: .utf8)
+        let store = ClaudeConfigStore(
+            configURLProvider: { claudeURL },
+            backupService: BackupService(backupsDirectoryURL: tempRoot.appendingPathComponent("backups"))
+        )
+        let registry = ServerRegistry(servers: [
+            ManagedServer(name: "Second", config: MCPServerConfig(command: "node", env: ["Z": "last", "A": "first"])),
+            ManagedServer(name: "First", config: MCPServerConfig(command: "npx"))
+        ])
+        try store.syncEnabledServers(from: registry)
+        let firstWrite = try Data(contentsOf: claudeURL)
+        let expectedValues = try store.loadConfig().values
+        let originalValues = try JSONDecoder().decode(ClaudeDesktopConfig.self, from: Data(original.utf8)).values
+        for (key, value) in originalValues where key != "mcpServers" {
+            #expect(expectedValues[key] == value)
+        }
+
+        for _ in 0..<10 {
+            if directToggle {
+                try store.syncServer(registry.servers[0])
+            } else {
+                try store.syncEnabledServers(from: registry)
+            }
+            #expect(try Data(contentsOf: claudeURL) == firstWrite)
+            #expect(try store.loadConfig().values == expectedValues)
+        }
     }
 }

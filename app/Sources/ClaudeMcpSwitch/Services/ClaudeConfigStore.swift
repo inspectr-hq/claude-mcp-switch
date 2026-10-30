@@ -66,8 +66,20 @@ struct ClaudeConfigStore: ClaudeConfigStoreProtocol {
 
     private func write(config: ClaudeDesktopConfig, to url: URL) throws {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
-        let data = try encoder.encode(config)
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+
+        // JSONEncoder does not preserve dictionary insertion order. Assemble the
+        // top-level members explicitly, leaving JSON escaping and values to it.
+        let keys = ["mcpServers"] + config.values.keys.filter { $0 != "mcpServers" }.sorted()
+        let members = try keys.compactMap { key -> String? in
+            guard let value = config.values[key] else { return nil }
+            let encodedKey = String(decoding: try encoder.encode(key), as: UTF8.self)
+            let encodedValue = String(decoding: try encoder.encode(value), as: UTF8.self)
+                .replacingOccurrences(of: "\n", with: "\n  ")
+            return "  \(encodedKey) : \(encodedValue)"
+        }
+        let json = members.isEmpty ? "{}" : "{\n\(members.joined(separator: ",\n"))\n}"
+        let data = Data(json.utf8)
         try data.write(to: url, options: .atomic)
     }
 }
